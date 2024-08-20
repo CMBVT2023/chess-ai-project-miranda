@@ -1,0 +1,1 @@
+let mainBoard = Chessboard('mainBoard', 'start')
