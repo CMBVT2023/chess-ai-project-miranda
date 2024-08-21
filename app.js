@@ -15,7 +15,7 @@ function loadEventListeners() {
             if (e.target.value == "Computer Vs Computer") {
                 let newGame = new computerVsComputer(500);
             } else {
-                playerVsComputer(750);
+                playerVsComputer('mainBoard', 750);
             };
         })
     })
