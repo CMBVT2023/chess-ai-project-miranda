@@ -1,26 +1,24 @@
 import { Chess } from "./node_modules/chess.js/dist/esm/chess.js"
+import { computerVsComputer } from "./js/ComputerVsComputer.js";
+import { playerVsComputer } from "./js/PlayerVsComputer.js";
 
-function randomMove() {
-    let possibleMoves = newGame.moves();
+const modeSelectionButtons = document.getElementById('game-options').querySelectorAll('input');
 
-    if (newGame.isGameOver()) {
-        if (newGame.isCheckmate()) {
-            console.log(newGame.turn() + " is the loser.")
-        } else if (newGame.isStalemate() || newGame.isDraw()) {
-            let reason = newGame.isStalemate() ? 'Stalemate' : 'Draw' 
-            console.log("This one is a", reason)
-        }
-        return
-    }
-
-    let randomIdx = Math.floor(Math.random() * possibleMoves.length);
-    newGame.move(possibleMoves[randomIdx]);
+function reloadGame() {
+    newGame.reset()
     mainBoard.position(newGame.fen())
+}
 
-    setTimeout(randomMove, 1);
-};
+function loadEventListeners() {
+    modeSelectionButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            if (e.target.value == "Computer Vs Computer") {
+                let newGame = new computerVsComputer(500);
+            } else {
+                playerVsComputer(750);
+            };
+        })
+    })
+}
 
-let mainBoard = Chessboard('mainBoard', 'start');
-const newGame = new Chess();
-
-setTimeout(randomMove, 1)
+loadEventListeners()
