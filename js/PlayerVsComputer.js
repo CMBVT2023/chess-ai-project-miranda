@@ -1,4 +1,5 @@
 import { Chess } from "../node_modules/chess.js/dist/esm/chess.js"
+import { evaluateBoard } from "./Evaluation.js";
 
 export function playerVsComputer(currentBoardID, playSpeed) {
     let currentBoard = null;
@@ -49,18 +50,21 @@ export function playerVsComputer(currentBoardID, playSpeed) {
     }
 
     function makeRandomMove() {
-        let possibleMoves = currentGame.moves();
+        let possibleMoves = currentGame.moves({ verbose: true });
 
-        if (possibleMoves.length === 0) return;
+        if (possibleMoves.length === 0) {
+            console.log('game over')
+            return;
+        };
 
         let randomIndex = Math.floor(Math.random() * possibleMoves.length);
         currentGame.move(possibleMoves[randomIndex]);
         currentBoard.position(currentGame.fen());
     }
-
+    
     function onDrop (source, target) {
         removeGreySquares();
-
+        
         // Checks if the move is viable.
         try {
             let move = currentGame.move({
@@ -68,6 +72,8 @@ export function playerVsComputer(currentBoardID, playSpeed) {
                 to: target,
                 promotion: 'q'
             })
+            
+            evaluateBoard(move, 0, move.color);
 
             // make random legal move for npc
             setTimeout(makeRandomMove, playSpeed);
