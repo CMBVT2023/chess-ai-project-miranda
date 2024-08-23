@@ -13,7 +13,7 @@ function loadEventListeners() {
     modeSelectionButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             if (e.target.value == "Computer Vs Computer") {
-                let newGame = new computerVsComputer(500);
+                let newGame = new computerVsComputer(100);
             } else {
                 playerVsComputer('mainBoard', 750);
             };

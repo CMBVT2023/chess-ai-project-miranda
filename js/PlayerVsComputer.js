@@ -1,5 +1,6 @@
 import { Chess } from "../node_modules/chess.js/dist/esm/chess.js"
 import { evaluateBoard } from "./Evaluation.js";
+import { checkGame } from "./GameOver.js";
 
 export function playerVsComputer(currentBoardID, playSpeed) {
     let currentBoard = null;
@@ -52,14 +53,28 @@ export function playerVsComputer(currentBoardID, playSpeed) {
     function makeRandomMove() {
         let possibleMoves = currentGame.moves({ verbose: true });
 
-        if (possibleMoves.length === 0) {
-            console.log('game over')
+        if (possibleMoves.length == 0) {
+            console.log('Opponent Turn:', 'Game Over')
             return;
         };
 
-        let randomIndex = Math.floor(Math.random() * possibleMoves.length);
-        currentGame.move(possibleMoves[randomIndex]);
-        currentBoard.position(currentGame.fen());
+        let bestMove;
+        let highestScore = 0;
+
+        for (const movement of possibleMoves) {
+            let currentScore = evaluateBoard(movement, highestScore, movement.color)
+            if (currentScore > highestScore || bestMove == undefined) {
+                highestScore = currentScore;
+                bestMove = movement;
+            }
+        }
+        
+        currentGame.move(bestMove);
+        currentBoard.position(currentGame.fen())
+        if (checkGame(currentGame)) {
+            console.log(checkGame(currentGame));
+            return;
+        }
     }
     
     function onDrop (source, target) {
@@ -72,12 +87,16 @@ export function playerVsComputer(currentBoardID, playSpeed) {
                 to: target,
                 promotion: 'q'
             })
-            
-            evaluateBoard(move, 0, move.color);
+                        
+            if (checkGame(currentGame)) {
+                console.log(checkGame(currentGame));
+                return;
+            } else {
+                // Calls the move function for the opposing player
+                setTimeout(makeRandomMove, playSpeed);
+            }
+        } catch { // if not, 'snapback' is returned to move the piece back to its previous position before being grabbed.
 
-            // make random legal move for npc
-            setTimeout(makeRandomMove, playSpeed);
-        } catch {
             return 'snapback';
         }   
     }

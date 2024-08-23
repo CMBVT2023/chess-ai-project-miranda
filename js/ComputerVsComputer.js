@@ -1,4 +1,6 @@
 import { Chess } from "../node_modules/chess.js/dist/esm/chess.js"
+import { checkGame } from "./GameOver.js";
+import { evaluateBoard } from "./Evaluation.js";
 
 export function computerVsComputer(playSpeed) {
     let currentBoard = Chessboard('mainBoard', 'start');
@@ -6,22 +8,31 @@ export function computerVsComputer(playSpeed) {
     let speed = playSpeed;
 
     function makeRandomMove() {
-        let possibleMoves = currentGame.moves();
-    
-        if (currentGame.isGameOver()) {
-            if (currentGame.isCheckmate()) {
-                console.log(currentGame.turn() + " is the loser.")
-            } else if (currentGame.isStalemate() || currentGame.isDraw()) {
-                let reason = currentGame.isStalemate() ? 'Stalemate' : 'Draw' 
-                console.log("This one is a", reason)
-            }
-            return
+        let possibleMoves = currentGame.moves({verbose: true});
+        
+        if (possibleMoves.length == 0) {
+            return;
         }
-    
-        let randomIdx = Math.floor(Math.random() * possibleMoves.length);
-        currentGame.move(possibleMoves[randomIdx]);
+        
+        let bestMove;
+        let highestScore = 0;
+
+        for (const movement of possibleMoves) {
+            let currentScore = evaluateBoard(movement, highestScore, movement.color)
+            if (currentScore > highestScore || bestMove == undefined) {
+                highestScore = currentScore;
+                bestMove = movement;
+            }
+        }
+
+
+        
+        currentGame.move(bestMove);
         currentBoard.position(currentGame.fen())
-    
+        if (checkGame(currentGame)) {
+            console.log(checkGame(currentGame));
+            return;
+        }
         setTimeout(makeRandomMove, speed);
     }
 

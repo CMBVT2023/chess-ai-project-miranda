@@ -153,6 +153,9 @@ export function evaluateBoard(move, prevSum, color) {
         // If so, then it checks the color that made the capture/move.
         if (move.color == color) {
             // If it was the main player's color, self or main AI, then it results in a positive score since it benefits the main player.
+            // // Note that the value being calculated from the prevSum variable is the value of the piece's weight plus the the value of the square that the piece was moved too.
+            // // To get the square, opponentPositioning is access based on the main player's color, then the piece that was captured, and then the x coordinate on the board, in this case the 
+            // // first element in the moveTo array, and then the y coordinate, which is the second element in the moveTo array.
             prevSum += (pieceWeights[move.captured] + opponentPositioning[move.color][move.captured][moveTo[0]][moveTo[1]])
         } else {
             // Else, it was the opponent's color, that results in a negative score since it is a benefit for the opponent.
@@ -160,6 +163,42 @@ export function evaluateBoard(move, prevSum, color) {
         }
     }
 
-    // Left off on calculating the score result of promoting a pawn.
+    // Checks if the current move resulted in the promotion of a piece, this is done by checking if the flags property includes the 'p' or promoted flag.
+    if (move.flags.includes('p')) {
+        move.promotion = 'q';
 
+        if (move.color == color) {
+            // If the promoted piece was the main player's then that is an advantage
+
+            // First, since the piece that was promoted is technically removed from the board, it first needs to be subtracted from the score, and the position of the piece is found using the moveFrom array.
+            prevSum -= (pieceWeights[move.piece] + selfPositioning[move.color][move.piece][moveFrom[0]][moveFrom[1]])
+            // Second, the new piece that is added to the board, which is always a queen for simplicity, is then added since it provides the main player an advantage.
+            // // Note that in this case move.piece is replaced with move.promotion to access the new weight of the piece and that moveTo is used in place of moveFrom, since the piece
+            // // technically moved to a new position.
+            prevSum += (pieceWeights[move.promotion] + selfPositioning[move.color][move.promotion][moveTo[0]][moveTo[1]]);
+        } else {
+            // if the opponent's pieces promoted,
+
+            // Again, technically since the piece was removed from the board, the main player gets an advantage and thus the weight of the piece and its position is added to the prevScore variable.
+            prevSum += (pieceWeights[move.piece] + selfPositioning[move.color][move.piece][moveFrom[0]][moveFrom[1]])
+
+            // Then, the Weight and position value of the newly promoted piece is then removed from the prevScore to show a disadvantage.
+            prevSum -= (pieceWeights[move.promotion] + selfPositioning[move.color][move.promotion][moveTo[0]][moveTo[1]]);
+        }
+    } else {
+        // If the current piece did not promote, then it still exists on the board, thus the only update that needs to occur is to change the value at the piece's previous position, 
+        // and its new position.
+
+        // Again, a check is made to see if the piece being moved is the main player's.
+        if (move.color == color) {
+            prevSum -= (selfPositioning[move.color][move.piece][moveFrom[0]][moveFrom[1]])
+            prevSum += (selfPositioning[move.color][move.piece][moveTo[0]][moveTo[1]])
+        } else {
+            prevSum += (selfPositioning[move.color][move.piece][moveFrom[0]][moveFrom[1]])
+            prevSum -= (selfPositioning[move.color][move.piece][moveTo[0]][moveTo[1]])
+        }
+    }
+
+
+    return prevSum;
 }
