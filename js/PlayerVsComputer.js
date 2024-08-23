@@ -1,6 +1,6 @@
 import { Chess } from "../node_modules/chess.js/dist/esm/chess.js"
-import { evaluateBoard } from "./Evaluation.js";
 import { checkGame } from "./GameOver.js";
+import { miniMaxCalculation } from "./MiniMax.js";
 
 export function playerVsComputer(currentBoardID, playSpeed) {
     let currentBoard = null;
@@ -50,7 +50,7 @@ export function playerVsComputer(currentBoardID, playSpeed) {
         }
     }
 
-    function makeRandomMove() {
+    function makeComputerMove() {
         let possibleMoves = currentGame.moves({ verbose: true });
 
         if (possibleMoves.length == 0) {
@@ -58,16 +58,7 @@ export function playerVsComputer(currentBoardID, playSpeed) {
             return;
         };
 
-        let bestMove;
-        let highestScore = 0;
-
-        for (const movement of possibleMoves) {
-            let currentScore = evaluateBoard(movement, highestScore, movement.color)
-            if (currentScore > highestScore || bestMove == undefined) {
-                highestScore = currentScore;
-                bestMove = movement;
-            }
-        }
+        let bestMove = miniMaxCalculation(0, possibleMoves, true, currentGame, 0);
         
         currentGame.move(bestMove);
         currentBoard.position(currentGame.fen())
@@ -93,10 +84,9 @@ export function playerVsComputer(currentBoardID, playSpeed) {
                 return;
             } else {
                 // Calls the move function for the opposing player
-                setTimeout(makeRandomMove, playSpeed);
+                setTimeout(makeComputerMove, playSpeed);
             }
         } catch { // if not, 'snapback' is returned to move the piece back to its previous position before being grabbed.
-
             return 'snapback';
         }   
     }
