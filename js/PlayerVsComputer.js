@@ -1,6 +1,6 @@
 import { Chess } from "../node_modules/chess.js/dist/esm/chess.js"
 import { checkGame } from "./GameOver.js";
-import { miniMaxCalculation } from "./MiniMax.js";
+import { logMoves, miniMaxCalculation, resetMoves } from "./MiniMax.js";
 
 export function playerVsComputer(currentBoardID, playSpeed) {
     let currentBoard = null;
@@ -58,8 +58,15 @@ export function playerVsComputer(currentBoardID, playSpeed) {
             return;
         };
 
-        let bestMove = miniMaxCalculation(0, possibleMoves, true, currentGame, 0);
+        let startTime = Date.now();
+        resetMoves();
+
+        let [bestMove, bestValue] = miniMaxCalculation(3, true, currentGame, 0, 'b');
         
+        console.log('Time to calculate best move:', Date.now() - startTime, 'milliseconds.');
+        logMoves();
+
+        console.log(bestMove, bestValue);
         currentGame.move(bestMove);
         currentBoard.position(currentGame.fen())
         if (checkGame(currentGame)) {

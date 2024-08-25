@@ -1,4 +1,3 @@
-import { Chess } from "./node_modules/chess.js/dist/esm/chess.js"
 import { computerVsComputer } from "./js/ComputerVsComputer.js";
 import { playerVsComputer } from "./js/PlayerVsComputer.js";
 
@@ -13,7 +12,7 @@ function loadEventListeners() {
     modeSelectionButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             if (e.target.value == "Computer Vs Computer") {
-                let newGame = new computerVsComputer(100);
+                computerVsComputer(100);
             } else {
                 playerVsComputer('mainBoard', 750);
             };
