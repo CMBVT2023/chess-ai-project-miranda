@@ -84,31 +84,48 @@ export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, 
             } 
             
             
-            // Checks if the currentAlpha value is less than the recursive function's returned value
-            if (alphaVal < nestedBestValue || alphaVal == undefined) {
+            // Checks if the current Alpha value is less than the recursive function's returned value
+            if (alphaVal <= nestedBestValue || alphaVal == undefined) {
                 // if it is or if alphaValue is currently unset, then set the alphaVal equal to the returned value.
-                // // The purpose of this is to get the highest value from this path, that way it can be compared to the lowest possible value.
+                // // The purpose of this is to see if the highest score for the main player will be better than the potential lowest score from the opponent.
+                // // If at any case the score for the opponent becomes greater than the highest score for the main player, then further searching that path is unnecessary since choosing
+                // // it will result in a disadvantage for the main player.
                 alphaVal = nestedBestValue;
             }
         } else {
+            // If not, then the lowest score for the opponent needs to be found.
+
+            // Checks if the recursive function's returned value is less than the current minimumVal variable, or if the minimumVal variable is undefined.
             if (nestedBestValue < minimumVal || minimumVal == undefined) {
+                // If either case is true, then set the new minimumVal to the returned value and set the tempMove to the bestMove variable, since it is currently the best move that can be made
+                // to give the main player the best advantage possible.
                 minimumVal = nestedBestValue;
                 bestMove = tempMove;
             } 
             
-            if (betaVal > nestedBestValue || betaVal == undefined) {
+            // Checks if the current Beta value is greater than the recursive function's returned value
+            if (betaVal >= nestedBestValue || betaVal == undefined) {
+                // If it is or if the betaVal is currently unset for the branch, update it with the returned value.
+                // // In this case, since the opponent will likely choose the lowest score, relative to the main player gaining an advantage, then the lowest score for said branch will likely
+                // // be what the opponent picks
                 betaVal = nestedBestValue;
             }
         }
 
+        // Checks if the alphaVal is greater than or equal to the betaVal
         if (alphaVal >= betaVal) {
+            // If so, then this path is unlikely to ever be picked since it either has the opponent gaining a greater advantage or the main player gaining less of an advantage.
+            // // In either case, both players will likely never choose this path so further searching it is unnecessary.
             break;
         }
     }
 
+    // Checks if the value is based on the main player's turn or the opponent
     if (isMainPlayer) {
+        // If it is for the main player, then return the highest score since the highest advantage is desired.
         return [bestMove, maximumVal];
     } else {
+        // If it is for the opponent, then return the minimum score since the opponent will likely choose the score that proves the main player the smallest advantage possible.
         return [bestMove, minimumVal];
     }
 }
