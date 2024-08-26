@@ -2,7 +2,7 @@ import { Chess } from "../node_modules/chess.js/dist/esm/chess.js"
 import { checkGame } from "./GameOver.js";
 import { logMoves, miniMaxCalculation, resetMoves } from "./MiniMax.js";
 
-export function playerVsComputer(currentBoardID, playSpeed) {
+export function playerVsComputer(playSpeed, npcMode) {
     let currentBoard = null;
     let currentGame = new Chess();
 
@@ -10,11 +10,11 @@ export function playerVsComputer(currentBoardID, playSpeed) {
     let blackSquareHighlight = '#696969';
 
     function removeGreySquares() {
-        $(`#${currentBoardID} .square-55d63`).css('background', '');
+        $(`#${'mainBoard'} .square-55d63`).css('background', '');
     }
 
     function greySquare(square) {
-        let $currentSquare = $(`#${currentBoardID} .square-${square}`);
+        let $currentSquare = $(`#${'mainBoard'} .square-${square}`);
         
         let background = whiteSquareHighlight;
         if ($currentSquare.hasClass('black-3c85d')) {
@@ -110,5 +110,5 @@ export function playerVsComputer(currentBoardID, playSpeed) {
         onSnapEnd: onSnapEnd,
     }
 
-    currentBoard = Chessboard(currentBoardID, config);
+    currentBoard = Chessboard('mainBoard', config);
 };
