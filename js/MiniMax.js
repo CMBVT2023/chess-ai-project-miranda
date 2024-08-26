@@ -6,8 +6,8 @@ export function resetMoves() {
     numberOfMoves = 0;
 }
 
-export function logMoves() {
-    console.log(numberOfMoves);
+export function movesMade() {
+    return numberOfMoves;
 }
 
 // // Recursive Function Call PseudoCode
@@ -47,8 +47,8 @@ export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, 
     // one to store the minimum score possible,
     // one to store the maximum score possible,
     // and one to store the move that achieves the lowest minimum score and highest maximum score.
-    let minimumVal;
-    let maximumVal;
+    let minimumVal = Number.POSITIVE_INFINITY;
+    let maximumVal = Number.NEGATIVE_INFINITY;
     let bestMove;
 
     // Iterates through the entire array of currently possible moves.
@@ -75,7 +75,7 @@ export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, 
         // Checks if the isMainPlayer variable is true.
         if (isMainPlayer) {
             // If so, then the highest value needs to be found.
-            if (nestedBestValue > maximumVal || maximumVal == undefined) {
+            if (nestedBestValue > maximumVal) {
                 // If the previous recursive function call returns a larger value, or if the maximumVal is still unset,
                 // then the recursive function call's score is set to the maximumVal variable and the current tempMove is set to the bestMove variable
                 // since it is currently the best move that can be made.
@@ -84,32 +84,19 @@ export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, 
             } 
             
             
-            // Checks if the current Alpha value is less than the recursive function's returned value
-            if (alphaVal <= nestedBestValue || alphaVal == undefined) {
-                // if it is or if alphaValue is currently unset, then set the alphaVal equal to the returned value.
-                // // The purpose of this is to see if the highest score for the main player will be better than the potential lowest score from the opponent.
-                // // If at any case the score for the opponent becomes greater than the highest score for the main player, then further searching that path is unnecessary since choosing
-                // // it will result in a disadvantage for the main player.
-                alphaVal = nestedBestValue;
-            }
+            alphaVal = Math.max(nestedBestValue, alphaVal);
         } else {
             // If not, then the lowest score for the opponent needs to be found.
 
             // Checks if the recursive function's returned value is less than the current minimumVal variable, or if the minimumVal variable is undefined.
-            if (nestedBestValue < minimumVal || minimumVal == undefined) {
+            if (nestedBestValue < minimumVal) {
                 // If either case is true, then set the new minimumVal to the returned value and set the tempMove to the bestMove variable, since it is currently the best move that can be made
                 // to give the main player the best advantage possible.
                 minimumVal = nestedBestValue;
                 bestMove = tempMove;
             } 
             
-            // Checks if the current Beta value is greater than the recursive function's returned value
-            if (betaVal >= nestedBestValue || betaVal == undefined) {
-                // If it is or if the betaVal is currently unset for the branch, update it with the returned value.
-                // // In this case, since the opponent will likely choose the lowest score, relative to the main player gaining an advantage, then the lowest score for said branch will likely
-                // // be what the opponent picks
-                betaVal = nestedBestValue;
-            }
+            betaVal = Math.min(nestedBestValue, betaVal);
         }
 
         // Checks if the alphaVal is greater than or equal to the betaVal

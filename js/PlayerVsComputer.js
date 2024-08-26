@@ -1,6 +1,8 @@
 import { Chess } from "../node_modules/chess.js/dist/esm/chess.js"
 import { checkGame } from "./GameOver.js";
-import { logMoves, miniMaxCalculation, resetMoves } from "./MiniMax.js";
+import { miniMaxCalculation, movesMade, resetMoves } from "./MiniMax.js";
+
+let bestValue = 0;
 
 export function playerVsComputer(currentBoardID, playSpeed) {
     let currentBoard = null;
@@ -51,22 +53,16 @@ export function playerVsComputer(currentBoardID, playSpeed) {
     }
 
     function makeComputerMove() {
-        let possibleMoves = currentGame.moves({ verbose: true });
-
-        if (possibleMoves.length == 0) {
-            console.log('Opponent Turn:', 'Game Over')
-            return;
-        };
-
         let startTime = Date.now();
         resetMoves();
 
-        let [bestMove, bestValue] = miniMaxCalculation(3, true, currentGame, 0, 'b');
+        let [bestMove, nestedValue] = miniMaxCalculation(3, true, currentGame, bestValue, currentGame.turn(), Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
         
-        console.log('Time to calculate best move:', Date.now() - startTime, 'milliseconds.');
-        logMoves();
+        console.log('Time to calculate best move:', Date.now() - startTime, 'milliseconds.\n',
+                    'Amount of Moves Checked: ', movesMade());
 
-        console.log(bestMove, bestValue);
+        bestValue = nestedValue;
+
         currentGame.move(bestMove);
         currentBoard.position(currentGame.fen())
         if (checkGame(currentGame)) {
