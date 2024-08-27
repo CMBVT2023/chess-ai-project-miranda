@@ -1,6 +1,7 @@
 import { Chess } from "../node_modules/chess.js/dist/esm/chess.js"
 import { checkGame } from "./GameOver.js";
 import { evaluateBoard } from "./Evaluation.js";
+import { miniMaxCalculation, resetMoves, logMoves } from "./MiniMax.js";
 
 export function computerVsComputer(playSpeed, npcOne, npcTwo) {
     let currentBoard = Chessboard('mainBoard', 'start');
@@ -9,36 +10,123 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo) {
 
     function makeRandomMove() {
         try {
-            let possibleMoves = currentGame.moves({verbose: true});
-            
+            let possibleMoves = currentGame.moves();
+    
             if (possibleMoves.length == 0) {
                 return;
-            }
-            
-            let bestMove;
-            let highestScore = 0;
+            };
     
-            for (const movement of possibleMoves) {
-                let currentScore = evaluateBoard(movement, highestScore, movement.color)
-                if (currentScore > highestScore || bestMove == undefined) {
-                    highestScore = currentScore;
-                    bestMove = movement;
+            let randomIndex = Math.floor(Math.random() * possibleMoves.length);
+            let nextMove = possibleMoves[randomIndex];
+    
+            currentGame.move(nextMove);
+            currentBoard.position(currentGame.fen())
+            if (checkGame(currentGame)) {
+                console.log(checkGame(currentGame));
+                return;
+            }
+    
+            if (currentGame.turn() == 'b') {
+                setTimeout(npcOneMove, playSpeed);
+            } else {
+                setTimeout(npcTwoMove, playSpeed);
+            }
+        }  catch {
+            console.log('Game Reset')
+        }
+    }
+
+    function evaluateMove() {
+        try {
+            let possibleMoves = currentGame.moves({ verbose: true });
+    
+            if (possibleMoves.length == 0) {
+                return;
+            };
+    
+            let startTime = Date.now();
+            let bestScore;
+            let bestMove;
+    
+            for (const move of possibleMoves) {
+                let tempScore = evaluateBoard(move, bestScore, currentGame.turn());
+                if (tempScore > bestScore || bestMove == undefined) {
+                    bestScore = tempScore;
+                    bestMove = move;
                 }
             }
     
+            console.log('Time to calculate best move:', Date.now() - startTime, 'milliseconds.\n',
+                        'Number of Moves Checked:', possibleMoves.length);
     
-            
             currentGame.move(bestMove);
             currentBoard.position(currentGame.fen())
             if (checkGame(currentGame)) {
                 console.log(checkGame(currentGame));
                 return;
             }
-            setTimeout(makeRandomMove, speed);
+    
+            if (currentGame.turn() == 'b') {
+                setTimeout(npcOneMove, playSpeed);
+            } else {
+                setTimeout(npcTwoMove, playSpeed);
+            }
         } catch {
-            console.log('Game Reset');
+            console.log('Game Reset')
         }
     }
 
-    makeRandomMove();
+    function minimaxMove() {
+        try {
+            let possibleMoves = currentGame.moves({ verbose: true });
+    
+            if (possibleMoves.length == 0) {
+                return;
+            };
+    
+            let startTime = Date.now();
+            resetMoves();
+    
+            let [bestMove, bestValue] = miniMaxCalculation(3, true, currentGame, 0, currentGame.turn());
+            
+            console.log('Time to calculate best move:', Date.now() - startTime, 'milliseconds.');
+            logMoves();
+    
+            currentGame.move(bestMove);
+            currentBoard.position(currentGame.fen())
+            if (checkGame(currentGame)) {
+                console.log(checkGame(currentGame));
+                return;
+            }
+    
+            if (currentGame.turn() == 'b') {
+                setTimeout(npcOneMove, playSpeed);
+            } else {
+                setTimeout(npcTwoMove, playSpeed);
+            }
+        } catch {
+            console.log('Game Reset')
+        }
+    }
+
+    let npcOneMove;
+    let npcTwoMove;
+
+    if (npcOne == 0) {
+        npcOneMove = makeRandomMove;
+    } else if (npcOne == 1) {
+        npcOneMove = evaluateMove;
+    } else if (npcOne == 2) {
+        npcOneMove = minimaxMove;
+    }
+
+    if (npcTwo == 0) {
+        npcTwoMove = makeRandomMove;
+    } else if (npcTwo == 1) {
+        npcTwoMove = evaluateMove;
+    } else if (npcTwo == 2) {
+        npcTwoMove = minimaxMove;
+    }
+
+    npcOneMove();
 };

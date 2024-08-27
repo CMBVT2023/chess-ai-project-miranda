@@ -1,4 +1,5 @@
 import { Chess } from "../node_modules/chess.js/dist/esm/chess.js"
+import { evaluateBoard } from "./Evaluation.js";
 import { checkGame } from "./GameOver.js";
 import { logMoves, miniMaxCalculation, resetMoves } from "./MiniMax.js";
 
@@ -50,11 +51,60 @@ export function playerVsComputer(playSpeed, npcMode) {
         }
     }
 
-    function makeComputerMove() {
+    function makeRandomMove() {
+        let possibleMoves = currentGame.moves();
+
+        if (possibleMoves.length == 0) {
+            console.log('Opponent Turn:', 'Game Over')
+            return;
+        };
+
+        let randomIndex = Math.floor(Math.random() * possibleMoves.length);
+        let nextMove = possibleMoves[randomIndex];
+
+        currentGame.move(nextMove);
+        currentBoard.position(currentGame.fen())
+        if (checkGame(currentGame)) {
+            console.log(checkGame(currentGame));
+            return;
+        }
+    }
+
+    function evaluateMove() {
         let possibleMoves = currentGame.moves({ verbose: true });
 
         if (possibleMoves.length == 0) {
             console.log('Opponent Turn:', 'Game Over')
+            return;
+        };
+
+        let startTime = Date.now();
+        let bestScore;
+        let bestMove;
+
+        for (const move of possibleMoves) {
+            let tempScore = evaluateBoard(move, bestScore, currentGame.turn());
+            if (tempScore > bestScore || bestMove == undefined) {
+                bestScore = tempScore;
+                bestMove = move;
+            }
+        }
+
+        console.log('Time to calculate best move:', Date.now() - startTime, 'milliseconds.\n',
+                    'Number of Moves Checked:', possibleMoves.length);
+
+        currentGame.move(bestMove);
+        currentBoard.position(currentGame.fen())
+        if (checkGame(currentGame)) {
+            console.log(checkGame(currentGame));
+            return;
+        }
+    }
+
+    function minimaxMove() {
+        let possibleMoves = currentGame.moves({ verbose: true });
+
+        if (possibleMoves.length == 0) {
             return;
         };
 
@@ -66,7 +116,6 @@ export function playerVsComputer(playSpeed, npcMode) {
         console.log('Time to calculate best move:', Date.now() - startTime, 'milliseconds.');
         logMoves();
 
-        console.log(bestMove, bestValue);
         currentGame.move(bestMove);
         currentBoard.position(currentGame.fen())
         if (checkGame(currentGame)) {
@@ -91,7 +140,7 @@ export function playerVsComputer(playSpeed, npcMode) {
                 return;
             } else {
                 // Calls the move function for the opposing player
-                setTimeout(makeComputerMove, playSpeed);
+                setTimeout(makeMove, playSpeed);
             }
         } catch { // if not, 'snapback' is returned to move the piece back to its previous position before being grabbed.
             return 'snapback';
@@ -108,6 +157,15 @@ export function playerVsComputer(playSpeed, npcMode) {
         onDragStart: onDragStart,
         onDrop: onDrop,
         onSnapEnd: onSnapEnd,
+    }
+    let makeMove;
+
+    if (npcMode == 0) {
+        makeMove = makeRandomMove;
+    } else if (npcMode == 1) {
+        makeMove = evaluateMove;
+    } else if (npcMode == 2) {
+        makeMove = minimaxMove;
     }
 
     currentBoard = Chessboard('mainBoard', config);

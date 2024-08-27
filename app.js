@@ -40,7 +40,7 @@ function loadComputerVsComputer() {
         multiNPCModeForm.classList.toggle('hidden');
         gameOptions.classList.toggle('hidden');
         reloadButton.classList.toggle('hidden');
-        computerVsComputer(250, npcOneType, npcTwoType);
+        computerVsComputer(1000, npcOneType, npcTwoType);
     }, {once:true})
 }
 
@@ -62,7 +62,7 @@ function loadPlayerVsComputer() {
         npcModeForm.classList.toggle('hidden');
         gameOptions.classList.toggle('hidden');
         reloadButton.classList.toggle('hidden');
-        playerVsComputer(250, npcType);
+        playerVsComputer(1000, npcType);
     }, {once:true})
 }
 
