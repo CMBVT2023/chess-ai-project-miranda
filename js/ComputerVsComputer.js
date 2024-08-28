@@ -3,6 +3,9 @@ import { checkGame } from "./GameOver.js";
 import { evaluateBoard } from "./Evaluation.js";
 import { miniMaxCalculation, resetMoves, movesMade } from "./MiniMax.js";
 
+let NPCOneBestValue = 0;
+let NPCTwoBestValue = 0;
+
 export function computerVsComputer(playSpeed, npcOne, npcTwo) {
     let currentBoard = Chessboard('mainBoard', 'start');
     let currentGame = new Chess();
@@ -38,20 +41,26 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo) {
 
     function evaluateMove() {
         try {
-            let possibleMoves = currentGame.moves({ verbose: true });
+            let possibleMoves = currentGame.simpleMoves();
     
             if (possibleMoves.length == 0) {
                 return;
             };
     
             let startTime = Date.now();
-            let bestScore;
+            let value;
             let bestMove;
+
+            if (currentGame.turn() == 'w') {
+                value = NPCOneBestValue;
+            } else {
+                value = NPCTwoBestValue;
+            }
     
             for (const move of possibleMoves) {
-                let tempScore = evaluateBoard(move, bestScore, currentGame.turn());
-                if (tempScore > bestScore || bestMove == undefined) {
-                    bestScore = tempScore;
+                let tempScore = evaluateBoard(move, value, currentGame.turn());
+                if (tempScore > value || bestMove == undefined) {
+                    value = tempScore;
                     bestMove = move;
                 }
             }
@@ -67,8 +76,10 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo) {
             }
     
             if (currentGame.turn() == 'b') {
+                NPCTwoBestValue = value;
                 setTimeout(npcOneMove, playSpeed);
             } else {
+                NPCOneBestValue = value;
                 setTimeout(npcTwoMove, playSpeed);
             }
         } catch {
@@ -85,9 +96,15 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo) {
             };
     
             let startTime = Date.now();
+            let value;
+            if (currentGame.turn() == 'w') {
+                value = NPCOneBestValue
+            } else {
+                value = NPCTwoBestValue
+            }
             resetMoves();
     
-            let [bestMove, bestValue] = miniMaxCalculation(3, true, currentGame, 0, currentGame.turn());
+            let [bestMove, bestValue] = miniMaxCalculation(3, true, currentGame, value, currentGame.turn());
             
             console.log('Time to calculate best move:', Date.now() - startTime, 'milliseconds.\n',
                     'Amount of Moves Checked: ', movesMade());
@@ -100,8 +117,10 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo) {
             }
     
             if (currentGame.turn() == 'b') {
+                NPCTwoBestValue = value;
                 setTimeout(npcOneMove, playSpeed);
             } else {
+                NPCOneBestValue = value;
                 setTimeout(npcTwoMove, playSpeed);
             }
         } catch {
@@ -127,6 +146,9 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo) {
     } else if (npcTwo == 2) {
         npcTwoMove = minimaxMove;
     }
+
+    NPCOneBestValue = 0;
+    NPCTwoBestValue = 0;
 
     npcOneMove();
 };

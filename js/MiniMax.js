@@ -40,7 +40,7 @@ function calculateScores(moves, prevScore, color, isMainPlayer) {
 // NodeDepth is the maximum depth limit that this recursive function can be called.
 export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, sum, color, alphaVal, betaVal) {
     // Generates the list of currently possible moves.
-    let movesList = calculateScores(currentGame.moves({verbose: true}), sum, color, isMainPlayer);
+    let movesList = calculateScores(currentGame.simpleMoves(), sum, color, isMainPlayer);
 
     // Checks if the maximum node depth is reached or if no other moves are possible,
     if (currentNodeDepth == 0 || movesList.length == 0) {

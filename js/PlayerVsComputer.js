@@ -72,20 +72,19 @@ export function playerVsComputer(playSpeed, npcMode) {
     }
 
     function evaluateMove() {
-        let possibleMoves = currentGame.moves({ verbose: true });
+        let possibleMoves = currentGame.simpleMoves();
 
         if (possibleMoves.length == 0) {
             return;
         };
 
         let startTime = Date.now();
-        let bestScore;
         let bestMove;
 
         for (const move of possibleMoves) {
-            let tempScore = evaluateBoard(move, bestScore, currentGame.turn());
-            if (tempScore > bestScore || bestMove == undefined) {
-                bestScore = tempScore;
+            let tempScore = evaluateBoard(move, bestValue, currentGame.turn());
+            if (tempScore > bestValue || bestMove == undefined) {
+                bestValue = tempScore;
                 bestMove = move;
             }
         }
@@ -102,7 +101,7 @@ export function playerVsComputer(playSpeed, npcMode) {
     }
 
     function minimaxMove() {
-        let possibleMoves = currentGame.moves({ verbose: true });
+        let possibleMoves = currentGame.moves();
 
         if (possibleMoves.length == 0) {
             return;
@@ -170,5 +169,6 @@ export function playerVsComputer(playSpeed, npcMode) {
         makeMove = minimaxMove;
     }
 
+    bestValue = 0;
     currentBoard = Chessboard('mainBoard', config);
 };
