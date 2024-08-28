@@ -111,7 +111,7 @@ export function playerVsComputer(playSpeed, npcMode) {
         let startTime = Date.now();
         resetMoves();
 
-        let [bestMove, nestedValue] = miniMaxCalculation(3, true, currentGame, bestValue, currentGame.turn(), Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
+        let [bestMove, nestedValue] = miniMaxCalculation(2, true, currentGame, bestValue, currentGame.turn(), Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
         
         console.log('Time to calculate best move:', Date.now() - startTime, 'milliseconds.\n',
                     'Amount of Moves Checked: ', movesMade());

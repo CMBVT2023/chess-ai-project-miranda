@@ -10,6 +10,15 @@ export function movesMade() {
     return numberOfMoves;
 }
 
+function calculateScores(moves, prevScore, color) {
+    for (const move of moves) {
+        move.score = evaluateBoard(move, prevScore, color)
+    }
+
+    moves.sort((a,b) => b.score - a.score)
+    return moves;
+}
+
 // // Recursive Function Call PseudoCode
 
 // 1 We decide on a predetermined depth limit, k.
@@ -26,16 +35,7 @@ export function movesMade() {
 // NodeDepth is the maximum depth limit that this recursive function can be called.
 export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, sum, color, alphaVal, betaVal) {
     // Generates the list of currently possible moves.
-    let movesList = currentGame.moves({verbose: true});
-
-    // Randomizes the moves list utilizing swap in place.
-    // // There is a fifty percent chance that the current position will swap values with another random position.
-    for (let i = 0; i < movesList.length; i++) {
-        if (Math.random() > 0.5) {
-            let newPosition = Math.floor(Math.random() * movesList.length);
-            [movesList[i], movesList[newPosition]] = [movesList[newPosition], movesList[i]]
-        }
-    }
+    let movesList = calculateScores(currentGame.moves({verbose: true}));
 
     // Checks if the maximum node depth is reached or if no other moves are possible,
     if (currentNodeDepth == 0 || movesList.length == 0) {
