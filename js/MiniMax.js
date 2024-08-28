@@ -10,12 +10,17 @@ export function movesMade() {
     return numberOfMoves;
 }
 
-function calculateScores(moves, prevScore, color) {
+function calculateScores(moves, prevScore, color, isMainPlayer) {
     for (const move of moves) {
-        move.score = evaluateBoard(move, prevScore, color)
+        move.score = evaluateBoard(move, prevScore, color);
+    }
+    
+    if (isMainPlayer) {
+        moves.sort((a,b) => b.score - a.score);
+    } else {
+        moves.sort((a,b) => a.score - b.score);
     }
 
-    moves.sort((a,b) => b.score - a.score)
     return moves;
 }
 
@@ -35,7 +40,7 @@ function calculateScores(moves, prevScore, color) {
 // NodeDepth is the maximum depth limit that this recursive function can be called.
 export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, sum, color, alphaVal, betaVal) {
     // Generates the list of currently possible moves.
-    let movesList = calculateScores(currentGame.moves({verbose: true}));
+    let movesList = calculateScores(currentGame.moves({verbose: true}), sum, color, isMainPlayer);
 
     // Checks if the maximum node depth is reached or if no other moves are possible,
     if (currentNodeDepth == 0 || movesList.length == 0) {
@@ -81,8 +86,7 @@ export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, 
                 // since it is currently the best move that can be made.
                 maximumVal = nestedBestValue;
                 bestMove = tempMove;
-            } 
-            
+            }
             
             alphaVal = Math.max(nestedBestValue, alphaVal);
         } else {
