@@ -1,4 +1,4 @@
-import { Chess } from "../node_modules/chess.js/dist/esm/chess.js"
+import { Chess } from "./chess.js"
 import { checkGame } from "./GameOver.js";
 import { evaluateBoard } from "./Evaluation.js";
 import { miniMaxCalculation, resetMoves, movesMade } from "./MiniMax.js";
