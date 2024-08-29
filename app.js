@@ -2,16 +2,26 @@ import { computerVsComputer } from "./js/ComputerVsComputer.js";
 import { playerVsComputer } from "./js/PlayerVsComputer.js";
 
 const gameOptions = document.getElementById('mode-type');
+const [playerVsNPC, NPCVsNPC] = gameOptions.querySelectorAll('input')
 const npcModeForm = document.getElementById('player-mode-options');
 const multiNPCModeForm = document.getElementById('npc-mode-options');
 const reloadButton = document.getElementById('reload-button');
+const gameDiv = document.getElementById('mainBoard');
+const mainNPCDisplay = document.getElementById('player-vs-npc-info');
+const multiNPCDisplay = document.getElementById('npc-vs-npc-info');
 
 function reloadGame() {
-    const gameDiv = document.getElementById('mainBoard')
     gameDiv.innerHTML = ``;
 
     gameOptions.classList.toggle('hidden');
     reloadButton.classList.toggle('hidden');
+    playerVsNPC.disabled = false;
+    NPCVsNPC.disabled = false;
+    if (mainNPCDisplay.classList.contains('hidden')) {
+        multiNPCDisplay.classList.toggle('hidden')
+    } else if (multiNPCDisplay.classList.contains('hidden')) {
+        mainNPCDisplay.classList.toggle('hidden')
+    }
 }
 
 function loadComputerVsComputer() {
@@ -40,8 +50,12 @@ function loadComputerVsComputer() {
         multiNPCModeForm.classList.toggle('hidden');
         gameOptions.classList.toggle('hidden');
         reloadButton.classList.toggle('hidden');
-        computerVsComputer(1000, npcOneType, npcTwoType);
+        multiNPCDisplay.classList.toggle('hidden')
+        const [npcOneDisplay, npcTwoDisplay] = multiNPCDisplay.querySelectorAll('div');
+        computerVsComputer(250, npcOneType, npcTwoType, npcOneDisplay, npcTwoDisplay);
     }, {once:true})
+
+    playerVsNPC.disabled ? playerVsNPC.disabled = false : playerVsNPC.disabled = true;
 }
 
 function loadPlayerVsComputer() {
@@ -62,19 +76,19 @@ function loadPlayerVsComputer() {
         npcModeForm.classList.toggle('hidden');
         gameOptions.classList.toggle('hidden');
         reloadButton.classList.toggle('hidden');
-        playerVsComputer(1000, npcType);
+        mainNPCDisplay.classList.toggle('hidden');
+        playerVsComputer(250, npcType, mainNPCDisplay);
     }, {once:true})
+
+    NPCVsNPC.disabled ? NPCVsNPC.disabled = false : NPCVsNPC.disabled = true;
 }
 
 function loadEventListeners() {
-    gameOptions.querySelectorAll('input').forEach(button => {
-        button.addEventListener('click', (e) => {
-            if (e.target.value == "Computer Vs Computer") {
-                loadComputerVsComputer();
-            } else {
-                loadPlayerVsComputer();
-            };
-        })
+    playerVsNPC.addEventListener('click', () => {
+        loadPlayerVsComputer();
+    })
+    NPCVsNPC.addEventListener('click', () => {
+        loadComputerVsComputer();
     })
     reloadButton.addEventListener('click', reloadGame);
 }

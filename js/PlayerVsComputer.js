@@ -5,12 +5,13 @@ import { miniMaxCalculation, movesMade, resetMoves } from "./MiniMax.js";
 
 let bestValue = 0;
 
-export function playerVsComputer(playSpeed, npcMode) {
+export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
     let currentBoard = null;
     let currentGame = new Chess();
+    const [timeDisplay, moveDisplay] = gameDisplay.querySelectorAll('span');
 
-    let whiteSquareHighlight = '#a9a9a9';
-    let blackSquareHighlight = '#696969';
+    let whiteSquareHighlight = '#235FB9';
+    let blackSquareHighlight = '#194990';
 
     function removeGreySquares() {
         $(`#${'mainBoard'} .square-55d63`).css('background', '');
@@ -53,6 +54,11 @@ export function playerVsComputer(playSpeed, npcMode) {
         }
     }
 
+    function displayInfo(milliseconds, moveAmount) {
+        timeDisplay.innerHTML = `${(milliseconds / 1000)}`;
+        moveDisplay.innerHTML = moveAmount;
+    }
+
     function makeRandomMove() {
         let possibleMoves = currentGame.moves();
 
@@ -89,8 +95,7 @@ export function playerVsComputer(playSpeed, npcMode) {
             }
         }
 
-        console.log('Time to calculate best move:', Date.now() - startTime, 'milliseconds.\n',
-                    'Number of Moves Checked:', possibleMoves.length);
+        displayInfo(Date.now() - startTime, possibleMoves.length)
 
         currentGame.move(bestMove);
         currentBoard.position(currentGame.fen())
@@ -112,8 +117,7 @@ export function playerVsComputer(playSpeed, npcMode) {
 
         let [bestMove, nestedValue] = miniMaxCalculation(3, true, currentGame, bestValue, currentGame.turn(), Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
         
-        console.log('Time to calculate best move:', Date.now() - startTime, 'milliseconds.\n',
-                    'Amount of Moves Checked: ', movesMade());
+        displayInfo(Date.now() - startTime, movesMade())
 
         bestValue = nestedValue;
 
@@ -171,4 +175,7 @@ export function playerVsComputer(playSpeed, npcMode) {
 
     bestValue = 0;
     currentBoard = Chessboard('mainBoard', config);
+    window.addEventListener('resize', () => {
+        currentBoard.resize();
+    })
 };
