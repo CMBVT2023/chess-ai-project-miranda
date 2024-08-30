@@ -9,6 +9,9 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
     let currentBoard = null;
     let currentGame = new Chess();
     const [timeDisplay, moveDisplay] = gameDisplay.querySelectorAll('span');
+    const currentTurnStatus = document.getElementById('current-turn');
+    const currentGameStatus = document.getElementById('game-status');
+    currentGameStatus.innerHTML = 'In Progress...';
 
     let whiteSquareHighlight = '#235FB9';
     let blackSquareHighlight = '#194990';
@@ -72,8 +75,10 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
         currentGame.move(nextMove);
         currentBoard.position(currentGame.fen())
         if (checkGame(currentGame)) {
-            console.log(checkGame(currentGame));
+            currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
             return;
+        } else {
+            currentTurnStatus.innerHTML = 'White';
         }
     }
 
@@ -100,8 +105,10 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
         currentGame.move(bestMove);
         currentBoard.position(currentGame.fen())
         if (checkGame(currentGame)) {
-            console.log(checkGame(currentGame));
+            currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
             return;
+        } else {
+            currentTurnStatus.innerHTML = 'White';
         }
     }
 
@@ -124,8 +131,10 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
         currentGame.move(bestMove);
         currentBoard.position(currentGame.fen())
         if (checkGame(currentGame)) {
-            console.log(checkGame(currentGame));
+            currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
             return;
+        } else {
+            currentTurnStatus.innerHTML = 'White';
         }
     }
     
@@ -141,9 +150,10 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
             })
                         
             if (checkGame(currentGame)) {
-                console.log(checkGame(currentGame));
+                currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
                 return;
             } else {
+                currentTurnStatus.innerHTML = 'Black';
                 // Calls the move function for the opposing player
                 setTimeout(makeMove, playSpeed);
             }

@@ -10,7 +10,10 @@ const gameDiv = document.getElementById('mainBoard');
 const mainNPCDisplay = document.getElementById('player-vs-npc-info');
 const multiNPCDisplay = document.getElementById('npc-vs-npc-info');
 
+const npcVsNPCButtons = document.getElementById('npc-vs-npc-buttons');
+
 function reloadGame() {
+    gameDiv.classList.toggle('hidden');
     gameDiv.innerHTML = ``;
 
     gameOptions.classList.toggle('hidden');
@@ -21,6 +24,17 @@ function reloadGame() {
         multiNPCDisplay.classList.toggle('hidden')
     } else if (multiNPCDisplay.classList.contains('hidden')) {
         mainNPCDisplay.classList.toggle('hidden')
+    }
+
+    let numberSpanElements = document.querySelectorAll('span');
+    numberSpanElements.forEach(span => span.innerHTML = '0');
+
+    const currentTurnStatus = document.getElementById('current-turn');
+    const currentGameStatus = document.getElementById('game-status');
+    currentTurnStatus.innerHTML = 'White';
+    currentGameStatus.innerHTML = 'Not Started';
+    if (!npcVsNPCButtons.classList.contains('hidden')) {
+        npcVsNPCButtons.classList.toggle('hidden');
     }
 }
 
@@ -52,6 +66,9 @@ function loadComputerVsComputer() {
         reloadButton.classList.toggle('hidden');
         multiNPCDisplay.classList.toggle('hidden')
         const [npcOneDisplay, npcTwoDisplay] = multiNPCDisplay.querySelectorAll('div');
+
+        gameDiv.classList.toggle('hidden');
+        npcVsNPCButtons.classList.toggle('hidden');
         computerVsComputer(250, npcOneType, npcTwoType, npcOneDisplay, npcTwoDisplay);
     }, {once:true})
 
@@ -77,6 +94,8 @@ function loadPlayerVsComputer() {
         gameOptions.classList.toggle('hidden');
         reloadButton.classList.toggle('hidden');
         mainNPCDisplay.classList.toggle('hidden');
+
+        gameDiv.classList.toggle('hidden');
         playerVsComputer(250, npcType, mainNPCDisplay);
     }, {once:true})
 

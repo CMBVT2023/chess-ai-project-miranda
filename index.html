@@ -1,20 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    
     <!-- CSS CDN Link for the chessboardjs API -->
     <link rel="stylesheet"
-      href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
-      integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
-      crossorigin="anonymous">
-
+    href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+    integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
+    crossorigin="anonymous">
+    
     <!-- Main CSS StyleSheet -->
     <link rel="stylesheet" href="./style.css">
     <title>Chess AI Project</title>
-</head>
-<body>
+  </head>
+  <body>
+    <div id="game-info">
+      <div id="current-game">
+        <h2>Game Status: <strong id="game-status">Not Started</strong></h2>
+        <h2>Current Turn: <strong id="current-turn">White</strong></h2>
+      </div>
+    
+      <div id="player-vs-npc-info" class="hidden">
+        <div id="main-npc">
+          <h3>Total Calculation Time: <span>0</span> seconds</h3>
+          <h3>Amount of Moves Searched: <span>0</span></h3>
+        </div>
+      </div>
+    
+      <div id="npc-vs-npc-info" class="hidden">
+        <div>
+          <div id="npc-one">
+            <h2>White Pieces:</h2>
+            <h3>Total Calculation Time: <span>0</span> seconds</h3>
+            <h3>Amount of Moves Searched: <span>0</span></h3>
+          </div>
+          <div id="npc-two">
+            <h2>Black Pieces:</h2>
+            <h3>Total Calculation Time: <span>0</span> seconds</h3>
+            <h3>Amount of Moves Searched: <span>0</span></h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <button id="reload-button" class="hidden">Restart Game</button>
+
     <div id="game-options">
       <div id="mode-type">
         <input value="Player Vs Computer" type="button">
@@ -69,33 +100,18 @@
 
         <input type="submit" value="Start Game">
       </form>
-
-      <div id="game-info">
-        <div id="player-vs-npc-info" class="hidden">
-          <div id="main-npc">
-            <h3>Total Calculation Time: <span>0</span> seconds</h3>
-            <h3>Amount of Moves Searched: <span>0</span></h3>
-          </div>
-        </div>
-
-        <div id="npc-vs-npc-info" class="hidden">
-          <div id="npc-one">
-            <h2>White Pieces:</h2>
-            <h3>Total Calculation Time: <span>0</span> seconds</h3>
-            <h3>Amount of Moves Searched: <span>0</span></h3>
-          </div>
-          <div id="npc-two">
-            <h2>Black Pieces:</h2>
-            <h3>Total Calculation Time: <span>0</span> seconds</h3>
-            <h3>Amount of Moves Searched: <span>0</span></h3>
-          </div>
-        </div>
-      </div>
-
-      <button id="reload-button" class="hidden">Restart Game</button>
     </div>
 
-    <div id="mainBoard"></div>
+
+    <div id="mainBoard" class="hidden"></div>
+
+    <div id="npc-vs-npc-buttons" class="hidden">
+      <div class="radio-option" id="continue-checkbox">
+        <input type="checkbox" id="continuous-play">
+        <label for="continuous-play">Continuous Play</label>
+      </div>
+      <button id="continue-button">Continue</button>
+    </div>
 
     <!-- JavaScript CDN Link for jquery -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"

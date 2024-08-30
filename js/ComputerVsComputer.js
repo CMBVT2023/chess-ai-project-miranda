@@ -12,6 +12,26 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
 
     let [npcOneTimeDisplay, npcOneMoveDisplay] = displayOne.querySelectorAll('span');
     let [npcTwoTimeDisplay, npcTwoMoveDisplay] = displayTwo.querySelectorAll('span');
+    const continueBtn = document.getElementById('continue-button');
+    const continuousCheck = document.getElementById('continuous-play');
+    const currentTurnStatus = document.getElementById('current-turn');
+    const currentGameStatus = document.getElementById('game-status');
+    currentGameStatus.innerHTML = 'In Progress...';
+
+    let continuePlay = false;
+
+    function continueGame(start) {
+        if (!continuePlay || start) {
+            continueBtn.disabled = false;
+
+            continueBtn.addEventListener('click', () => {
+                setTimeout(npcOneMove, playSpeed);
+                continueBtn.disabled = true;
+            }, {once:true})
+        } else {
+            setTimeout(npcOneMove, playSpeed);
+        }
+    }
 
     function displayInfo(timeDisplay, moveDisplay, milliseconds, moveAmount) {
         timeDisplay.innerHTML = `${(milliseconds / 1000)}`;
@@ -32,14 +52,16 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
             currentGame.move(nextMove);
             currentBoard.position(currentGame.fen())
             if (checkGame(currentGame)) {
-                console.log(checkGame(currentGame));
+                currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
                 return;
             }
     
             if (currentGame.turn() == 'b') {
-                setTimeout(npcOneMove, playSpeed);
-            } else {
+                currentTurnStatus.innerHTML = 'Black';
                 setTimeout(npcTwoMove, playSpeed);
+            } else {
+                currentTurnStatus.innerHTML = 'White';
+                continueGame();
             }
         }  catch {
             console.log('Game Reset')
@@ -81,16 +103,18 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
             currentGame.move(bestMove);
             currentBoard.position(currentGame.fen())
             if (checkGame(currentGame)) {
-                console.log(checkGame(currentGame));
+                currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
                 return;
             }
     
             if (currentGame.turn() == 'b') {
                 NPCOneBestValue = value;
-                setTimeout(npcOneMove, playSpeed);
+                currentTurnStatus.innerHTML = 'Black';
+                setTimeout(npcTwoMove, playSpeed);
             } else {
                 NPCTwoBestValue = value;
-                setTimeout(npcTwoMove, playSpeed);
+                currentTurnStatus.innerHTML = 'White';
+                continueGame();
             }
         } catch {
             console.log('Game Reset')
@@ -131,10 +155,12 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
     
             if (currentGame.turn() == 'b') {
                 NPCOneBestValue = value;
-                setTimeout(npcOneMove, playSpeed);
+                currentTurnStatus.innerHTML = 'Black';
+                setTimeout(npcTwoMove, playSpeed);
             } else {
                 NPCTwoBestValue = value;
-                setTimeout(npcTwoMove, playSpeed);
+                currentTurnStatus.innerHTML = 'White';
+                continueGame();
             }
         } catch {
             console.log('Game Reset')
@@ -166,5 +192,14 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
     window.addEventListener('resize', () => {
         currentBoard.resize();
     })
-    npcOneMove();
+
+    continuousCheck.addEventListener('change', (e) => {
+        if (continuousCheck.checked) {
+            continuePlay = true
+        } else {
+            continuePlay = false
+        }
+    })
+
+    continueGame();
 };
