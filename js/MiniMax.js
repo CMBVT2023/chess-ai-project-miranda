@@ -1,26 +1,41 @@
+// Imports teh evaluation function from the evaluation module.
 import { evaluateBoard } from "./Evaluation.js";
 
+// Initializes a global variable to store the total number of moves checked during the algorithm's runtime.
 let numberOfMoves = 0
 
+// Exports and initializes a function to reset the global move count variable to 0.
 export function resetMoves() {
     numberOfMoves = 0;
 }
 
+// Exports and initializes a function that returns the global move count variable.
 export function movesMade() {
     return numberOfMoves;
 }
 
+// Initializes a function that sorts all possible moves based on their evaluation score.
+// // Parameters are an array of possibleMoves, the currentScore of the board, the color of the current player, and a boolean that signifies if the current player is the main player,
+// // true signifies that it is the main player.
 function calculateScores(moves, prevScore, color, isMainPlayer) {
+    // Iterates through the passed in moves array 
     for (const move of moves) {
+        // Appends a new score property to the current move with the value obtained by calling the evaluateBoard function and passing in the appropriate arguments.
+        // The first is the current move, the next is the current board score, and the last is the color of the current player.
         move.score = evaluateBoard(move, prevScore, color);
     }
     
+    
+    // Checks if the current player is the main player.
     if (isMainPlayer) {
+        // If so, sort the moves by largest value to smallest, descending order.
         moves.sort((a,b) => b.score - a.score);
     } else {
+        // If not, sort the moves by smallest value to largest, ascending order.
         moves.sort((a,b) => a.score - b.score);
     }
 
+    // Returns the now sorted moves array.
     return moves;
 }
 
@@ -39,7 +54,8 @@ function calculateScores(moves, prevScore, color, isMainPlayer) {
 
 // NodeDepth is the maximum depth limit that this recursive function can be called.
 export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, sum, color, alphaVal, betaVal) {
-    // Generates the list of currently possible moves.
+    // Generates the list of currently possible moves and passed the array and other arguments to the calculateScore function.
+    // // The first argument passed is the moves array, then the sum of the current board, the color of the current player, and finally, a boolean to signify if the current player is the main player.
     let movesList = calculateScores(currentGame.simpleMoves(), sum, color, isMainPlayer);
 
     // Checks if the maximum node depth is reached or if no other moves are possible,
@@ -88,10 +104,11 @@ export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, 
                 bestMove = tempMove;
             }
             
+            // Uses the .max() method to set the alphaVal variable to the largest value between the current alphaVal or the recursive function's returned value.
             alphaVal = Math.max(nestedBestValue, alphaVal);
         } else {
             // If not, then the lowest score for the opponent needs to be found.
-
+            
             // Checks if the recursive function's returned value is less than the current minimumVal variable, or if the minimumVal variable is undefined.
             if (nestedBestValue < minimumVal) {
                 // If either case is true, then set the new minimumVal to the returned value and set the tempMove to the bestMove variable, since it is currently the best move that can be made
@@ -100,6 +117,7 @@ export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, 
                 bestMove = tempMove;
             } 
             
+            // Uses the .min() method to set the betaVa variable to the smallest value between the current betaVal or the recursive function's returned value.
             betaVal = Math.min(nestedBestValue, betaVal);
         }
 

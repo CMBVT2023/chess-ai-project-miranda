@@ -3,8 +3,6 @@ import { evaluateBoard } from "./Evaluation.js";
 import { checkGame } from "./GameOver.js";
 import { miniMaxCalculation, movesMade, resetMoves } from "./MiniMax.js";
 
-let bestValue = 0;
-
 export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
     let currentBoard = null;
     let currentGame = new Chess();
@@ -16,7 +14,7 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
     let whiteSquareHighlight = '#235FB9';
     let blackSquareHighlight = '#194990';
 
-    let bestValue = 0;
+    let globalValue = 0;
 
     function removeGreySquares() {
         $(`#${'mainBoard'} .square-55d63`).css('background', '');
@@ -92,18 +90,20 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
         };
 
         let startTime = Date.now();
+        let tempScore;
         let bestMove;
 
         for (const move of possibleMoves) {
-            let tempScore = evaluateBoard(move, bestValue, 'b');
-            if (tempScore > bestValue || bestMove == undefined) {
-                bestValue = tempScore;
+            let currentScore = evaluateBoard(move, globalValue, 'b');
+            if (currentScore > tempScore || bestMove == undefined) {
+                tempScore = currentScore;
                 bestMove = move;
             }
         }
 
-        displayInfo(Date.now() - startTime, possibleMoves.length)
-
+        displayInfo(Date.now() - startTime, possibleMoves.length);
+        
+        globalValue = evaluateBoard(bestMove, globalValue, 'b');
         currentGame.move(bestMove);
         currentBoard.position(currentGame.fen())
         if (checkGame(currentGame)) {
@@ -124,11 +124,11 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
         let startTime = Date.now();
         resetMoves();
 
-        let [bestMove, nestedValue] = miniMaxCalculation(3, true, currentGame, bestValue, currentGame.turn(), Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
+        let [bestMove, nestedValue] = miniMaxCalculation(3, true, currentGame, globalValue, 'b', Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
         
         displayInfo(Date.now() - startTime, movesMade())
 
-        bestValue = evaluateBoard(bestMove, bestValue, 'b');
+        globalValue = evaluateBoard(bestMove, globalValue, 'b');
 
         currentGame.move(bestMove);
         currentBoard.position(currentGame.fen())
@@ -152,7 +152,7 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
             })
 
             // Evaluates the current positioning of the board from blacks perspective and updates the global value variable.
-            bestValue = evaluateBoard(move, bestValue, 'b');
+            globalValue = evaluateBoard(move, globalValue, 'b');
                         
             if (checkGame(currentGame)) {
                 currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
@@ -188,7 +188,6 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
         makeMove = minimaxMove;
     }
 
-    bestValue = 0;
     currentBoard = Chessboard('mainBoard', config);
     window.addEventListener('resize', () => {
         currentBoard.resize();
