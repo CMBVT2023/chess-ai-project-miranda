@@ -1,3 +1,4 @@
+/* Styles pertaining to the main parts of the web page. */
 html {
     width: 100vw;
     height: 100vh;
@@ -12,6 +13,11 @@ body {
     justify-content: center;
     align-items: center;
     
+}
+
+/* Hidden Style class used to remove or 'hide' unneeded elements on the page. */
+.hidden {
+    display: none !important;
 }
 
 /* Styling pertaining to the various input buttons and radio buttons. */
@@ -30,6 +36,8 @@ input:hover {
     font-weight: bold;
 }
 
+/* Styles Pertaining to the main containers on the page. */
+
 #mainBoard {
     width: 40%;
 }
@@ -43,6 +51,19 @@ input:hover {
     flex-direction: column;
     justify-content: space-between;
 }
+
+#npc-vs-npc-buttons {
+    position: absolute;
+    bottom: 1%;
+    right: 1%;
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 250px;
+}
+
+/* Styles Pertaining to the various nested containers. */
 
 #current-game {
     display: flex;
@@ -65,6 +86,8 @@ input:hover {
     margin-right: 20px;
 }
 
+/* Styles Pertaining to specific elements on the page. */
+
 #continue-button {
     width: 75px;
 }
@@ -77,21 +100,6 @@ input:hover {
     position: absolute;
     left: 1%;
     bottom: 1%;
-}
-
-#npc-vs-npc-buttons {
-    position: absolute;
-    bottom: 1%;
-    right: 1%;
-
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 250px;
-}
-
-.hidden {
-    display: none !important;
 }
 
 /* Game Info Display */

@@ -15,19 +15,24 @@
     <title>Chess AI Project</title>
   </head>
   <body>
+
+    <!-- Various Game Info Container -->
     <div id="game-info">
+      <!-- Displays the current game's status -->
       <div id="current-game">
         <h2>Game Status: <strong id="game-status">Not Started</strong></h2>
         <h2>Current Turn: <strong id="current-turn">White</strong></h2>
       </div>
-    
+      
+      <!-- Displays the algorithm's run time for the Player Vs Computer Player Game Mode -->
       <div id="player-vs-npc-info" class="hidden">
         <div id="main-npc">
           <h3>Total Calculation Time: <span>0</span> seconds</h3>
           <h3>Amount of Moves Searched: <span>0</span></h3>
         </div>
       </div>
-    
+      
+      <!-- Displays the algorithms' run time for the Two Computer Player Game Mode -->
       <div id="npc-vs-npc-info" class="hidden">
           <div id="npc-one">
             <h2>White Pieces:</h2>
@@ -42,13 +47,18 @@
       </div>
     </div>
     
+    <!-- Restart Game Button -->
     <button id="reload-button" class="hidden">Restart Game</button>
 
+    <!-- Initial Game Mode Selection Container -->
     <div id="game-options">
+      <!-- Displays the available Game Modes -->
       <div id="mode-type">
         <input value="Player Vs Computer" type="button">
         <input value="Computer Vs Computer" type="button">
       </div>
+
+      <!-- Displays the options for the Player Vs Computer Game Mode -->
       <form id="player-mode-options" class="hidden">
         <h4>Computer Player Setting:</h4>
         <div class="radio-option">
@@ -67,6 +77,7 @@
         <input type="submit" value="Start Game">
       </form>
 
+      <!-- Displays the options for the Computer Vs Computer Game Mode -->
       <form id="npc-mode-options" class="hidden">
         <h4>Computer Player 1 Setting:</h4>
         <div class="radio-option">
@@ -100,9 +111,10 @@
       </form>
     </div>
 
-
+    <!-- Main Game Board / Chess Board Container -->
     <div id="mainBoard" class="hidden"></div>
 
+    <!-- Extra Buttons For the Computer Vs Computer Game Mode -->
     <div id="npc-vs-npc-buttons" class="hidden">
       <div class="radio-option" id="continue-checkbox">
         <input type="checkbox" id="continuous-play">

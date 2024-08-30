@@ -848,40 +848,42 @@ export class Chess {
     isGameOver() {
         return this.isCheckmate() || this.isStalemate() || this.isDraw();
     }
-    // Customized move function that returns only the necessary information for using the minimax algorithm
-    _simpleMove(uglyMove) {
-        const { color, piece, from, to, flags, captured, promotion } = uglyMove;
-        let prettyFlags = '';
-        for (const flag in BITS) {
-            if (BITS[flag] & flags) {
-                prettyFlags += FLAGS[flag];
-            }
-        }
-        const fromAlgebraic = algebraic(from);
-        const toAlgebraic = algebraic(to);
-        const move = {
-            color,
-            piece,
-            from: fromAlgebraic,
-            to: toAlgebraic,
-            flags: prettyFlags,
-        };
-        // generate the FEN for the 'after' key
-        this._makeMove(uglyMove);
-        this._undoMove();
-        if (captured) {
-            move.captured = captured;
-        }
-        if (promotion) {
-            move.promotion = promotion;
-        }
-        return move;
-    }
-    // Returns all moves as simplified moves that contain only the necessary info for using the minimax algorithm
-    simpleMoves({square = undefined, piece = undefined, } = {}) {
-        const moves = this._moves({square, piece})
-        return moves.map((move) => this._simpleMove(move));
-    }
+
+                            // Customized move function that returns only the necessary information for using the minimax algorithm
+                            _simpleMove(uglyMove) {
+                                const { color, piece, from, to, flags, captured, promotion } = uglyMove;
+                                let prettyFlags = '';
+                                for (const flag in BITS) {
+                                    if (BITS[flag] & flags) {
+                                        prettyFlags += FLAGS[flag];
+                                    }
+                                }
+                                const fromAlgebraic = algebraic(from);
+                                const toAlgebraic = algebraic(to);
+                                const move = {
+                                    color,
+                                    piece,
+                                    from: fromAlgebraic,
+                                    to: toAlgebraic,
+                                    flags: prettyFlags,
+                                };
+                                // generate the FEN for the 'after' key
+                                this._makeMove(uglyMove);
+                                this._undoMove();
+                                if (captured) {
+                                    move.captured = captured;
+                                }
+                                if (promotion) {
+                                    move.promotion = promotion;
+                                }
+                                return move;
+                            }
+                            // Returns all moves as simplified moves that contain only the necessary info for using the minimax algorithm
+                            simpleMoves({square = undefined, piece = undefined, } = {}) {
+                                const moves = this._moves({square, piece})
+                                return moves.map((move) => this._simpleMove(move));
+                            }
+
     moves({ verbose = false, square = undefined, piece = undefined, } = {}) {
         const moves = this._moves({ square, piece });
         if (verbose) {

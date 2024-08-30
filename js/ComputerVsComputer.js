@@ -3,8 +3,7 @@ import { checkGame } from "./GameOver.js";
 import { evaluateBoard } from "./Evaluation.js";
 import { miniMaxCalculation, resetMoves, movesMade } from "./MiniMax.js";
 
-let NPCOneBestValue = 0;
-let NPCTwoBestValue = 0;
+let bestValue = 0;
 
 export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displayTwo) {
     let currentBoard = Chessboard('mainBoard', 'start');
@@ -19,6 +18,7 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
     currentGameStatus.innerHTML = 'In Progress...';
 
     let continuePlay = false;
+    let bestValue = 0;
 
     function continueGame(start) {
         if (!continuePlay || start) {
@@ -77,22 +77,26 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
             };
     
             let startTime = Date.now();
-            let value;
             let bestMove;
 
             if (currentGame.turn() == 'w') {
-                value = NPCOneBestValue;
+                for (const move of possibleMoves) {
+                    let tempScore = evaluateBoard(move, -bestValue, currentGame.turn());
+                    if (tempScore > -bestValue || bestMove == undefined) {
+                        bestValue = -tempScore;
+                        bestMove = move;
+                    }
+                }
             } else {
-                value = NPCTwoBestValue;
-            }
-    
-            for (const move of possibleMoves) {
-                let tempScore = evaluateBoard(move, value, currentGame.turn());
-                if (tempScore > value || bestMove == undefined) {
-                    value = tempScore;
-                    bestMove = move;
+                for (const move of possibleMoves) {
+                    let tempScore = evaluateBoard(move, bestValue, currentGame.turn());
+                    if (tempScore > bestValue || bestMove == undefined) {
+                        bestValue = tempScore;
+                        bestMove = move;
+                    }
                 }
             }
+    
     
             if (currentGame.turn() == 'w') {
                 displayInfo(npcOneTimeDisplay, npcOneMoveDisplay, Date.now() - startTime, possibleMoves.length)
@@ -108,11 +112,9 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
             }
     
             if (currentGame.turn() == 'b') {
-                NPCOneBestValue = value;
                 currentTurnStatus.innerHTML = 'Black';
                 setTimeout(npcTwoMove, playSpeed);
             } else {
-                NPCTwoBestValue = value;
                 currentTurnStatus.innerHTML = 'White';
                 continueGame();
             }
@@ -130,15 +132,16 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
             };
     
             let startTime = Date.now();
-            let value;
-            if (currentGame.turn() == 'w') {
-                value = NPCOneBestValue
-            } else {
-                value = NPCTwoBestValue
-            }
+            let tempValue;
+            let bestMove;
             resetMoves();
+            
+            if (currentGame.turn() == 'w') {
+                [bestMove, tempValue] = miniMaxCalculation(3, true, currentGame, -bestValue, currentGame.turn());
+            } else {
+                [bestMove, tempValue] = miniMaxCalculation(3, true, currentGame, bestValue, currentGame.turn());
+            }
     
-            let [bestMove, bestValue] = miniMaxCalculation(3, true, currentGame, value, currentGame.turn());
 
             if (currentGame.turn() == 'w') {
                 displayInfo(npcOneTimeDisplay, npcOneMoveDisplay, Date.now() - startTime, movesMade())
@@ -146,6 +149,7 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
                 displayInfo(npcTwoTimeDisplay, npcTwoMoveDisplay, Date.now() - startTime, movesMade())
             }
     
+            bestValue = evaluateBoard(bestMove, bestValue, 'b')
             currentGame.move(bestMove);
             currentBoard.position(currentGame.fen())
             if (checkGame(currentGame)) {
@@ -154,11 +158,9 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
             }
     
             if (currentGame.turn() == 'b') {
-                NPCOneBestValue = value;
                 currentTurnStatus.innerHTML = 'Black';
                 setTimeout(npcTwoMove, playSpeed);
             } else {
-                NPCTwoBestValue = value;
                 currentTurnStatus.innerHTML = 'White';
                 continueGame();
             }
@@ -185,9 +187,6 @@ export function computerVsComputer(playSpeed, npcOne, npcTwo, displayOne, displa
     } else if (npcTwo == 2) {
         npcTwoMove = minimaxMove;
     }
-
-    NPCOneBestValue = 0;
-    NPCTwoBestValue = 0;
 
     window.addEventListener('resize', () => {
         currentBoard.resize();

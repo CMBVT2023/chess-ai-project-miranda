@@ -199,6 +199,6 @@ export function evaluateBoard(move, prevSum, color) {
         }
     }
 
-
+    // Returns the newly calculated sum.
     return prevSum;
 }

@@ -16,6 +16,8 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
     let whiteSquareHighlight = '#235FB9';
     let blackSquareHighlight = '#194990';
 
+    let bestValue = 0;
+
     function removeGreySquares() {
         $(`#${'mainBoard'} .square-55d63`).css('background', '');
     }
@@ -93,7 +95,7 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
         let bestMove;
 
         for (const move of possibleMoves) {
-            let tempScore = evaluateBoard(move, bestValue, currentGame.turn());
+            let tempScore = evaluateBoard(move, bestValue, 'b');
             if (tempScore > bestValue || bestMove == undefined) {
                 bestValue = tempScore;
                 bestMove = move;
@@ -126,7 +128,7 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
         
         displayInfo(Date.now() - startTime, movesMade())
 
-        bestValue = nestedValue;
+        bestValue = evaluateBoard(bestMove, bestValue, 'b');
 
         currentGame.move(bestMove);
         currentBoard.position(currentGame.fen())
@@ -148,6 +150,9 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
                 to: target,
                 promotion: 'q'
             })
+
+            // Evaluates the current positioning of the board from blacks perspective and updates the global value variable.
+            bestValue = evaluateBoard(move, bestValue, 'b');
                         
             if (checkGame(currentGame)) {
                 currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
