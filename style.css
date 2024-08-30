@@ -52,14 +52,17 @@ input:hover {
 
 #npc-vs-npc-info {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100vw;
 }
 
 #npc-vs-npc-info > div {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 #continue-button {
