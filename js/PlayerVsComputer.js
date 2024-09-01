@@ -295,7 +295,7 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
     let makeMove;
 
     // Checks the value of the npcMode using a switch statement
-    switch (npcMode) {
+    switch (+npcMode) {
         case 0: {
             // If the value is equal to 0,
             // the npc will determine its moves randomly using the makeRandomMove function.
