@@ -1,6 +1,8 @@
 // Imports the various functions from the modules in the JS folder.
-import { computerVsComputer } from "./js/ComputerVsComputer.js";
-import { playerVsComputer } from "./js/PlayerVsComputer.js";
+// import { computerVsComputer } from "./js/ComputerVsComputer.js";
+// import { playerVsComputer } from "./js/PlayerVsComputer.js";
+import { playerVsComputer } from './js/ChessGame.js';
+import { computerVsComputer } from './js/ChessGame.js';
 
 
 class ChessSelection {
@@ -79,20 +81,20 @@ class ChessSelection {
             e.preventDefault();
 
             // Initializes two variables to store the mode for each Computer Player.
-            let npcOneType;
-            let npcTwoType;
+            let npcOne;
+            let npcTwo;
 
             // Both for loops iterate through the various mode options for the Computer Players and sets the the selected type equal to the npc's type variable,
             // the first for loop is for npcOne and the second is for npcTwo.
             for (const item of document.getElementsByClassName('npc-one-mode')) {
                 if (item.checked) {
-                    npcOneType = item.value;
+                    npcOne = item.value;
                     break;
                 }
             }        
             for (const item of document.getElementsByClassName('npc-two-mode')) {
                 if (item.checked) {
-                    npcTwoType = item.value;
+                    npcTwo = item.value;
                     break;
                 }
             }
@@ -109,13 +111,13 @@ class ChessSelection {
 
             // Initialize two variables to store the respective displays for Computer Player one and Computer Player Two.
             // The display elements are first selected and stored in a node list before being deconstructed and stored in the two variables.
-            const [npcOneDisplay, npcTwoDisplay] = this.multiNPCDisplay.querySelectorAll('div');
+            const [displayOne, displayTwo] = this.multiNPCDisplay.querySelectorAll('div');
 
             // Calls the computerVsComputer function, found in its same named module, with the necessary arguments.
             // // Argument one is the delay in the Computer Players moves,
             // // the second and third are the npc modes,
             // // and the last two arguments are used to pass in the NPC display elements.
-            computerVsComputer(250, npcOneType, npcTwoType, npcOneDisplay, npcTwoDisplay);
+            let newGame = new computerVsComputer({speed: 250, npcOne, npcTwo, displayOne, displayTwo});
         }, {once:true})
 
         // Disables or reenabled the button interaction for the opposing game mode based said button's current disabled status.
@@ -157,7 +159,7 @@ class ChessSelection {
             // // Argument one is the delay in the Computer Players moves,
             // // the second is the Computer Player's mode,
             // // and the third is the Computer Player's Display element passed in.
-            playerVsComputer(250, npcType, this.mainNPCDisplay);
+            let newGame = new playerVsComputer({speed: 250, npcType, display: this.mainNPCDisplay});
         }, {once:true})
         
         // Disables or reenabled the button interaction for the opposing game mode based said button's current disabled status.

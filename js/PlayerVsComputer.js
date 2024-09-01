@@ -7,86 +7,79 @@ import { miniMaxCalculation, movesMade, resetMoves } from "./MiniMax.js";
 // Initializes a function to run the player vs computer game mode.
 export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
     // Initializes two variables, one stores the current chess board and the other the current chess game.
-    let currentBoard = null;
-    let currentGame = new Chess();
+        // let currentBoard = null;
+        // let currentGame = new Chess();
 
-    // Initializes all of the variables to store the various webpage elements.
-    const [timeDisplay, moveDisplay] = gameDisplay.querySelectorAll('span');
-    const currentTurnStatus = document.getElementById('current-turn');
-    const currentGameStatus = document.getElementById('game-status');
+        // Initializes all of the variables to store the various webpage elements.
+    // const [timeDisplay, moveDisplay] = gameDisplay.querySelectorAll('span');
+        // const currentTurnStatus = document.getElementById('current-turn');
+        // const currentGameStatus = document.getElementById('game-status');
 
     // Sets the status element to display that the game is in progress.
-    currentGameStatus.innerHTML = 'In Progress...';
+        // currentGameStatus.innerHTML = 'In Progress...';
 
     // Initializes variables to store the highlighting colors for the various squares.
-    let whiteSquareHighlight = '#235FB9';
-    let blackSquareHighlight = '#194990';
+    // let whiteSquareHighlight = '#235FB9';
+    // let blackSquareHighlight = '#194990';
 
     // Sets the global sum or value to 0.
-    let globalValue = 0;
+        // let globalValue = 0;
 
-    // Initializes a function to remove or change the background color from the highlight colors.
-    function removeGreySquares() {
-        $(`#${'mainBoard'} .square-55d63`).css('background', '');
-    }
+    // // Initializes a function to remove or change the background color from the highlight colors.
+    // function removeGreySquares() {
+    //     $(`#${'mainBoard'} .square-55d63`).css('background', '');
+    // }
 
     // Initializes a function to add the highlighted color for the passed in square.
-    function greySquare(square) {
-        // Initializes a variable to store the current square's as a jQuery object.
-        let $currentSquare = $(`#${'mainBoard'} .square-${square}`);
+    // function greySquare(square) {
+    //     // Initializes a variable to store the current square's as a jQuery object.
+    //     let $currentSquare = $(`#${'mainBoard'} .square-${square}`);
         
-        // Sets the background highlighting color to the whiteSquare's highlight color.
-        let background = whiteSquareHighlight;
+    //     // Sets the background highlighting color to the whiteSquare's highlight color.
+    //     let background = whiteSquareHighlight;
 
-        // Checks if the jQuery object has a class that signifies a 'black' square.
-        if ($currentSquare.hasClass('black-3c85d')) {
-            // Sets the background highlighting color to the blackSquare's highlight color.
-            background = blackSquareHighlight;
-        }
+    //     // Checks if the jQuery object has a class that signifies a 'black' square.
+    //     if ($currentSquare.hasClass('black-3c85d')) {
+    //         // Sets the background highlighting color to the blackSquare's highlight color.
+    //         background = blackSquareHighlight;
+    //     }
 
-        // Sets the jQuery's object's css background as the necessary highlight color for the square.
-        $currentSquare.css('background', background);
-    }
+    //     // Sets the jQuery's object's css background as the necessary highlight color for the square.
+    //     $currentSquare.css('background', background);
+    // }
 
-    // Initializes a function that triggers once the players mouse leaves the square on the chess board.
-    // // The parameters are, one, a object that represents the square the user is moving their mouse out of and the second is the piece within the square being left.
-    function onMouseOutSquare(square, piece) {
-        // Calls the removeGreySquare function.
-        removeGreySquare();
-    }
+    // // Initializes a function that triggers once the user grabs a piece.
+    // // // The various parameters include, a source object to represent the current square the user is grabbing from,
+    // // // the piece variable is what piece the user is grabbing, the position is the position of the current piece on the board,
+    // // // and orientation is the current game orientation of the board, either white facing towards the top or black facing the top.
+    // function onDragStart (source, piece, position, orientation) {
+    //     // Checks if the game is over to prevent moving the pieces.
+    //     if (currentGame.isGameOver()) return false;
 
-    // Initializes a function that triggers once the user grabs a piece.
-    // // The various parameters include, a source object to represent the current square the user is grabbing from,
-    // // the piece variable is what piece the user is grabbing, the position is the position of the current piece on the board,
-    // // and orientation is the current game orientation of the board, either white facing towards the top or black facing the top.
-    function onDragStart (source, piece, position, orientation) {
-        // Checks if the game is over to prevent moving the pieces.
-        if (currentGame.isGameOver()) return false;
+    //     // Checks if the piece if the correct color, the player can only move the white pieces not the black ones.
+    //     if (piece.search(/^b/) !== -1) return false;
 
-        // Checks if the piece if the correct color, the player can only move the white pieces not the black ones.
-        if (piece.search(/^b/) !== -1) return false;
+    //     // Initializes the possible moves that can be made based on the square the user is grabbing from.
+    //     let possibleMoves = currentGame.moves({
+    //         square: source,
+    //         verbose: true
+    //     });
 
-        // Initializes the possible moves that can be made based on the square the user is grabbing from.
-        let possibleMoves = currentGame.moves({
-            square: source,
-            verbose: true
-        });
+    //     // Checks if there are potential moves to be made and if not, then return false to prevent the user from moving pieces.
+    //     if (possibleMoves.length == 0) {
+    //         return false;
+    //     };
 
-        // Checks if there are potential moves to be made and if not, then return false to prevent the user from moving pieces.
-        if (possibleMoves.length == 0) {
-            return false;
-        };
+    //     // Calls the grey square function on the source object to highlight the square the user is grabbing from.
+    //     greySquare(source);
 
-        // Calls the grey square function on the source object to highlight the square the user is grabbing from.
-        greySquare(source);
-
-        // Iterates through all possible moves in the possibleMoves array.
-        for (const tile in possibleMoves) {
-            // Calls the grey square function on all of the tiles that moves can be potentially moved to, and thus highlighting all legal moves that can be made based on the square the user is
-            // grabbing the piece from.
-            greySquare(possibleMoves[tile].to)
-        }
-    }
+    //     // Iterates through all possible moves in the possibleMoves array.
+    //     for (const tile in possibleMoves) {
+    //         // Calls the grey square function on all of the tiles that moves can be potentially moved to, and thus highlighting all legal moves that can be made based on the square the user is
+    //         // grabbing the piece from.
+    //         greySquare(possibleMoves[tile].to)
+    //     }
+    // }
 
     // Initializes a function that displays the current info obtained after running minimax algorithm.
     // // The two parameters are two number values, one is the milliseconds it took to run the algorithm and the other is the amount of moves checked.
@@ -238,46 +231,46 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
     // Initializes a function that triggers once the player drops a piece onto a square.
     // // The parameters are an object containing the info for the square the player first grabbed the piece from
     // // and another object that contains the info for the square the player is moving their piece too.
-    function onDrop (source, target) {
-        // Calls the removeGreySquares function to remove all highlighted squares from the board.
-        removeGreySquares();
+    // function onDrop (source, target) {
+    //     // Calls the removeGreySquares function to remove all highlighted squares from the board.
+    //     removeGreySquares();
         
-        // Checks if the move is viable.
-        try {
-            // If the move is a legal move,
+    //     // Checks if the move is viable.
+    //     try {
+    //         // If the move is a legal move,
 
-            // Initializes a variable to store the current move that was made and makes said move on the chess board.
-            let move = currentGame.move({
-                from: source,
-                to: target,
-                promotion: 'q'
-            })
+    //         // Initializes a variable to store the current move that was made and makes said move on the chess board.
+    //         let move = currentGame.move({
+    //             from: source,
+    //             to: target,
+    //             promotion: 'q'
+    //         })
 
-            // Evaluates the current positioning of the board from blacks perspective and updates the global value variable.
-            globalValue = evaluateBoard(move, globalValue, 'b');
+    //         // Evaluates the current positioning of the board from blacks perspective and updates the global value variable.
+    //         globalValue = evaluateBoard(move, globalValue, 'b');
                         
-            // Checks if the current game is over using the checkGame function.
-            if (checkGame(currentGame)) {
-                // If the current game is over, log the reasoning as to why it ended to the currentGameStatus element.
-                currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
-                return;
-            } else {
-            // If not, then update the currentTurnStatus to show that it is now the Computer Player's turn.
-                currentTurnStatus.innerHTML = 'Black';
-                // Calls the move function for the opposing player
-                setTimeout(makeMove, playSpeed);
-            }
-        } catch {
-            // if not, 'snapback' is returned to move the piece back to its previous position before being grabbed.
-            return 'snapback';
-        }
-    }
+    //         // Checks if the current game is over using the checkGame function.
+    //         if (checkGame(currentGame)) {
+    //             // If the current game is over, log the reasoning as to why it ended to the currentGameStatus element.
+    //             currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
+    //             return;
+    //         } else {
+    //         // If not, then update the currentTurnStatus to show that it is now the Computer Player's turn.
+    //             currentTurnStatus.innerHTML = 'Black';
+    //             // Calls the move function for the opposing player
+    //             setTimeout(makeMove, playSpeed);
+    //         }
+    //     } catch {
+    //         // if not, 'snapback' is returned to move the piece back to its previous position before being grabbed.
+    //         return 'snapback';
+    //     }
+    // }
 
-    // Initializes a function that triggers once a piece's 'snapback' animation is completed.
-    function onSnapEnd() {
-        // Calls the position method on the chess board to display the current positioning of the chess game.
-        currentBoard.position(currentGame.fen());
-    };
+    // // Initializes a function that triggers once a piece's 'snapback' animation is completed.
+    // function onSnapEnd() {
+    //     // Calls the position method on the chess board to display the current positioning of the chess game.
+    //     currentBoard.position(currentGame.fen());
+    // };
 
     // Initializes a variable to store the configuration options for the chess board.
     // // In this configuration the chess board allows the user to grab pieces, the board's pieces all
@@ -292,36 +285,35 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
     }
     
     // Initializes a variable that will store the function associated with the npc's type, based on the passed in parameter.
-    let makeMove;
+    // let makeMove;
 
     // Checks the value of the npcMode using a switch statement
-    switch (+npcMode) {
-        case 0: {
-            // If the value is equal to 0,
-            // the npc will determine its moves randomly using the makeRandomMove function.
-            makeMove = makeRandomMove;
-            break;
-        };
-        case 1: {
-            // If the value is equal to 1,
-            // the npc will determine its by evaluating all currently possible moves using the evaluateMove function.
-            makeMove = evaluateMove;
-            break;
-        };
-        case 2: {
-            // If the value is equal to 2,
-            // the npc will determine its by evaluating all currently possible moves and the resulting moves after using the 
-            // minimaxMove function.
-            makeMove = minimaxMove;
-            break;
-        };
-    }
+    // switch (+npcMode) {
+    //     case 0: {
+    //         // If the value is equal to 0,
+    //         // the npc will determine its moves randomly using the makeRandomMove function.
+    //         makeMove = makeRandomMove;
+    //         break;
+    //     };
+    //     case 1: {
+    //         // If the value is equal to 1,
+    //         // the npc will determine its by evaluating all currently possible moves using the evaluateMove function.
+    //         makeMove = evaluateMove;
+    //         break;
+    //     };
+    //     case 2: {
+    //         // If the value is equal to 2,
+    //         // the npc will determine its by evaluating all currently possible moves and the resulting moves after using the 
+    //         // minimaxMove function.
+    //         makeMove = minimaxMove;
+    //         break;
+    //     };
+    // }
 
     // Initializes the chess board by passing in the config variable and the id of the html element that the board will appear in.
-    currentBoard = Chessboard('mainBoard', config);
 
-    // Adds an event listener to the window that will resize the current board each time the window is resized.
-    window.addEventListener('resize', () => {
-        currentBoard.resize();
-    })
+    // // Adds an event listener to the window that will resize the current board each time the window is resized.
+    // window.addEventListener('resize', () => {
+    //     currentBoard.resize();
+    // })
 };
