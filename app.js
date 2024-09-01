@@ -1,7 +1,6 @@
 // Imports the various classes from the modules in the JS folder.
-import { playerVsComputer } from './js/ChessGame.js';
-import { computerVsComputer } from './js/ChessGame.js';
-
+import { playerVsComputer } from "./js/PlayerVsComputer.js";
+import { computerVsComputer } from "./js/ComputerVsComputer.js";
 
 class ChessSelection {
     constructor() {
