@@ -121,6 +121,7 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
         }
     }
     
+    // Initializes a function that makes the best possible moves after calculating all possible moves' position values on the board.
     function evaluateMove() {
         // Initializes an array of all possible moves that can be made currently using the simpleMove method I created in the chess file.
         // The returned array contains similar objects except all of the properties are the necessary ones only.
@@ -181,37 +182,71 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
         }
     }
 
+    // Initializes a function that determines the best move possible based on all current moves and then the moves they result in too.
     function minimaxMove() {
+        // Initializes an array with all possible moves.
         let possibleMoves = currentGame.moves();
 
+        // Checks if the array of moves has at least one element.
         if (possibleMoves.length == 0) {
+            // If no elements are present, then call the checkGame function
+            currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
             return;
         };
 
+        // Initializes a variables and declares it equal to the current time to keep track of when the algorithm is first called.
         let startTime = Date.now();
+
+        // Resets the global moves variable in the Minimax module.
         resetMoves();
 
+        // Initializes two variables to store the results of the function call.
+        // // The function is called with multiple arguments,
+        // // the first is the node depth or the maximum number of recursive calls that will be made, a higher value will result better move selection but at the cost of longer calculation time,
+        // // the second is a boolean to represent if the current player is the main player, in this case black is the main player so this is true,
+        // // the third is the current globalValue of the board, the advantage value based on the positioning of all current pieces on the board,
+        // // the fourth is the color of the current player's turn, since this function will only be called during black's turn the string 'b' is used,
+        // // the last two are the alpha and beta values of the branches that will be used to determine if a branch can be cut or no longer searched on the tree,
+        // // and to start these values are set to their highest possible values with alpha being the largest negative number and beta being the largest positive number possible.
         let [bestMove, nestedValue] = miniMaxCalculation(3, true, currentGame, globalValue, 'b', Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
         
+        // Calls the display info function with the argument of how long it took for the algorithm to run, calculated by subtracting the startTime with the current time,
+        // and the number of moves check by the algorithm which is returned by the moveMade function.
         displayInfo(Date.now() - startTime, movesMade())
 
+        // Sets the globalValue variable to represent the current board positioning from black's perspective
+        // by calling the evaluateBoard function and passing in the move that will be made, the current globalValue, and the string 'b'.
         globalValue = evaluateBoard(bestMove, globalValue, 'b');
 
+        // Performs the best calculated move.
         currentGame.move(bestMove);
+
+        // Updates the chessboard to the current position of all pieces by obtaining the fen string from the chess game using the .fen() method on the currentGame.
         currentBoard.position(currentGame.fen())
+
+        // Checks if the current game is over using the checkGame function.
         if (checkGame(currentGame)) {
+            // If the current game is over, log the reasoning as to why it ended to the currentGameStatus element.
             currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
             return;
         } else {
+            // If not, then update the currentTurnStatus to show that it is now the player's turn.
             currentTurnStatus.innerHTML = 'White';
         }
     }
     
+    // Initializes a function that triggers once the player drops a piece onto a square.
+    // // The parameters are an object containing the info for the square the player first grabbed the piece from
+    // // and another object that contains the info for the square the player is moving their piece too.
     function onDrop (source, target) {
+        // Calls the removeGreySquares function to remove all highlighted squares from the board.
         removeGreySquares();
         
         // Checks if the move is viable.
         try {
+            // If the move is a legal move,
+
+            // Initializes a variable to store the current move that was made and makes said move on the chess board.
             let move = currentGame.move({
                 from: source,
                 to: target,
@@ -221,23 +256,33 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
             // Evaluates the current positioning of the board from blacks perspective and updates the global value variable.
             globalValue = evaluateBoard(move, globalValue, 'b');
                         
+            // Checks if the current game is over using the checkGame function.
             if (checkGame(currentGame)) {
+                // If the current game is over, log the reasoning as to why it ended to the currentGameStatus element.
                 currentGameStatus.innerHTML = `${checkGame(currentGame)}`;
                 return;
             } else {
+            // If not, then update the currentTurnStatus to show that it is now the Computer Player's turn.
                 currentTurnStatus.innerHTML = 'Black';
                 // Calls the move function for the opposing player
                 setTimeout(makeMove, playSpeed);
             }
-        } catch { // if not, 'snapback' is returned to move the piece back to its previous position before being grabbed.
+        } catch {
+            // if not, 'snapback' is returned to move the piece back to its previous position before being grabbed.
             return 'snapback';
-        }   
+        }
     }
 
+    // Initializes a function that triggers once a piece's 'snapback' animation is completed.
     function onSnapEnd() {
+        // Calls the position method on the chess board to display the current positioning of the chess game.
         currentBoard.position(currentGame.fen());
     };
 
+    // Initializes a variable to store the configuration options for the chess board.
+    // // In this configuration the chess board allows the user to grab pieces, the board's pieces all
+    // // appear in their default position, and the various methods of onDragStart, onDrop, and onSnapEnd
+    // // are all passed in and will be called once any of these events get triggered.
     let config = {
         draggable: true,
         position: 'start',
@@ -245,17 +290,37 @@ export function playerVsComputer(playSpeed, npcMode, gameDisplay) {
         onDrop: onDrop,
         onSnapEnd: onSnapEnd,
     }
+    
+    // Initializes a variable that will store the function associated with the npc's type, based on the passed in parameter.
     let makeMove;
 
-    if (npcMode == 0) {
-        makeMove = makeRandomMove;
-    } else if (npcMode == 1) {
-        makeMove = evaluateMove;
-    } else if (npcMode == 2) {
-        makeMove = minimaxMove;
+    // Checks the value of the npcMode using a switch statement
+    switch (npcMode) {
+        case 0: {
+            // If the value is equal to 0,
+            // the npc will determine its moves randomly using the makeRandomMove function.
+            makeMove = makeRandomMove;
+            break;
+        };
+        case 1: {
+            // If the value is equal to 1,
+            // the npc will determine its by evaluating all currently possible moves using the evaluateMove function.
+            makeMove = evaluateMove;
+            break;
+        };
+        case 2: {
+            // If the value is equal to 2,
+            // the npc will determine its by evaluating all currently possible moves and the resulting moves after using the 
+            // minimaxMove function.
+            makeMove = minimaxMove;
+            break;
+        };
     }
 
+    // Initializes the chess board by passing in the config variable and the id of the html element that the board will appear in.
     currentBoard = Chessboard('mainBoard', config);
+
+    // Adds an event listener to the window that will resize the current board each time the window is resized.
     window.addEventListener('resize', () => {
         currentBoard.resize();
     })
