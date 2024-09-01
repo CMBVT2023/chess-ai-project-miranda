@@ -1,6 +1,4 @@
-// Imports the various functions from the modules in the JS folder.
-// import { computerVsComputer } from "./js/ComputerVsComputer.js";
-// import { playerVsComputer } from "./js/PlayerVsComputer.js";
+// Imports the various classes from the modules in the JS folder.
 import { playerVsComputer } from './js/ChessGame.js';
 import { computerVsComputer } from './js/ChessGame.js';
 
@@ -32,6 +30,7 @@ class ChessSelection {
         this.numberSpanElements = document.querySelectorAll('span');
         this.currentTurnStatus = document.getElementById('current-turn');
         this.currentGameStatus = document.getElementById('game-status');
+        this.currentAdvantage = document.getElementById('game-advantage');
 
         this.loadEventListeners();
     }
@@ -67,6 +66,7 @@ class ChessSelection {
         // Selects all game info elements and sets their innerHTML to their original values.
         this.currentTurnStatus.innerHTML = 'White';
         this.currentGameStatus.innerHTML = 'Not Started';
+        this.currentAdvantage.innerHTML = 'None'
     }
 
     // Initializes a method to load the Computer Vs Computer Game Mode and display its various options.
