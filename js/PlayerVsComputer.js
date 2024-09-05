@@ -69,9 +69,11 @@ export class playerVsComputer extends ChessGame {
             verbose: true
         });
 
-        // Checks if there are potential moves to be made and if not, then return false to prevent the user from moving pieces.
+        // Checks if the possible moves array contains any elements.
         if (possibleMoves.length == 0) {
-            return false;
+            // If no elements are present, list the current game status then return to stop the game.
+            this.currentGameStatus();
+            return;
         };
 
         // Calls the grey square method on the source object to highlight the square the user is grabbing from.
@@ -149,7 +151,8 @@ export class playerVsComputer extends ChessGame {
         
         // Checks if the possible moves array contains any elements.
         if (possibleMoves.length == 0) {
-            // If no elements are present, then return false to signify that the game is over.
+            // If no elements are present, list the current game status then return to stop the game.
+            this.currentGameStatus();
             return;
         };
 
@@ -171,6 +174,13 @@ export class playerVsComputer extends ChessGame {
         // Initializes an array of all possible moves that can be made currently using the simpleMove method I created in the chess file.
         // The returned array contains similar objects except all of the properties are the necessary ones only.
         let possibleMoves = this.currentGame.simpleMoves();
+
+        // Checks if the possible moves array contains any elements.
+        if (possibleMoves.length == 0) {
+            // If no elements are present, list the current game status then return to stop the game.
+            this.currentGameStatus();
+            return;
+        };
 
         // Initializes two variables,
         // one is to store a temporary number,
@@ -222,6 +232,13 @@ export class playerVsComputer extends ChessGame {
      minimaxMove() {
         // Initializes an array with all possible moves.
         let possibleMoves = this.currentGame.moves();
+
+        // Checks if the possible moves array contains any elements.
+        if (possibleMoves.length == 0) {
+            // If no elements are present, list the current game status then return to stop the game.
+            this.currentGameStatus();
+            return;
+        };
 
         // Initializes a variable to store the starting time of when all moves are being evaluation.
         let startTime = Date.now()

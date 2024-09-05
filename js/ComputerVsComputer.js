@@ -44,6 +44,7 @@ export class computerVsComputer extends ChessGame {
 
     // Method used to load an eventListener on the continuousGame checkbox.
     loadContinuousChangeEvent() {
+        this.continuousCheck.checked = false;
         this.continuousCheck.addEventListener('change', () => {
             // If the continuousGame checkbox has a change event occur,
 
@@ -87,10 +88,10 @@ export class computerVsComputer extends ChessGame {
         
         // Checks if the possible moves array contains any elements.
         if (possibleMoves.length == 0) {
-            // If no elements are present, then return false to signify that the game is over.
-            return false;
+            // If no elements are present, list the current game status then return to stop the game.
+            this.currentGameStatus();
+            return;
         };
-
         let randomIndex = Math.floor(Math.random() * possibleMoves.length);
         let nextMove = possibleMoves[randomIndex];
         
@@ -125,8 +126,9 @@ export class computerVsComputer extends ChessGame {
 
             // Checks if the possible moves array contains any elements.
             if (possibleMoves.length == 0) {
-                // If no elements are present, then return false.
-                return false;
+                // If no elements are present, list the current game status then return to stop the game.
+                this.currentGameStatus();
+                return;
             };
 
             // Initializes two variables, one to store the bestMove once all moves are evaluated
@@ -212,6 +214,13 @@ export class computerVsComputer extends ChessGame {
         try{
             // Initializes an array with all possible moves.
             let possibleMoves = this.currentGame.moves();
+
+            // Checks if the possible moves array contains any elements.
+            if (possibleMoves.length == 0) {
+                // If no elements are present, list the current game status then return to stop the game.
+                this.currentGameStatus();
+                return;
+            };
     
             // Initializes three variables, 
             // one to store the number value returned from the recursive call
