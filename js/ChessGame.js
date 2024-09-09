@@ -16,7 +16,7 @@ export class ChessGame {
 
         // Initializes variables to store the elements relating to display game info.
         this.currentTurnStatus = document.getElementById('current-turn');
-        this.currentGameStatus = document.getElementById('game-status');
+        this.gameStatus = document.getElementById('game-status');
         this.currentAdvantage = document.getElementById('game-advantage');
 
         // Initializes an object to store the strings associated with the current player colors to make it easier to convert the single characters to strings.
@@ -60,7 +60,7 @@ export class ChessGame {
         }
     }
 
-    // Initializes a method to update the currentGameStatus display to reflect the status of the game and to check if the game is over.
+    // Initializes a method to update the updateGameStatus display to reflect the status of the game and to check if the game is over.
     updateGameStatus() {
         // Initializes two variables, one to store the status of the game as a string,
         // and the other to store a boolean that signifies if the game has ended.
@@ -68,18 +68,18 @@ export class ChessGame {
         let endGame;
 
         // Checks the current game's status.
-        if (this.currentGame.inCheck()) {
-            // If one of the current players is in check,
-
-            // Sets the status string to show which player is in check and set endGame to false.
-            status = `${this.piecesString[this.currentGame.turn()]} is in trouble.`;
-            endGame = false;
-        } else if (this.currentGame.isCheckmate()) {
+        if (this.currentGame.isCheckmate()) {
             // If one of the players has been checkmated,
             
             // Sets the status string to show which player was checkmated and set endGame to true.
             status = `Checkmate, ${this.piecesString[this.currentGame.turn()]} has lost.`;
             endGame = true;
+        } else if (this.currentGame.inCheck()) {
+            // If one of the current players is in check,
+
+            // Sets the status string to show which player is in check and set endGame to false.
+            status = `${this.piecesString[this.currentGame.turn()]} is in trouble.`;
+            endGame = false;
         } else if (this.currentGame.isInsufficientMaterial()) {
             // If there is not enough info to determine a winner,
 
@@ -112,7 +112,7 @@ export class ChessGame {
 
         // Updates the appropriate displays with the color of the current turn's player and the status of the game.
         this.currentTurnStatus.innerHTML = `${this.piecesString[this.currentGame.turn()]}`
-        this.currentGameStatus.innerHTML = status;
+        this.gameStatus.innerHTML = status;
 
         // Return the endGame boolean to signify if the game is over or not.
         return endGame;
@@ -130,8 +130,8 @@ export class ChessGame {
     // // The parameter passed in the move that will be made on the board.
     updateGlobalSum(move) {
         // Sets the globalSum variable to represent the current board positioning from black's perspective
-        // by calling the evaluateBoard function and passing in the move that will be made, the current globalSum, and the string 'b'.
-        this.globalSum = evaluateBoard(move, this.globalSum, 'b');
+        // by calling the evaluateBoard function and passing in the move that will be made, the currentGame instance, the current globalSum, and the string 'b'.
+        this.globalSum = evaluateBoard(move, this.currentGame, this.globalSum, 'b');
 
         // Initializes a variable to store the string containing the information for the current player with the current advantage.
         let advantageStatus;
@@ -139,13 +139,13 @@ export class ChessGame {
         // Checks the value of the globalSum.
         if (this.globalSum == 0) {
             // If it is currently 0, this signifies that no player has an advantage.
-            advantageStatus = 'Equal';
+            advantageStatus = `Equal | ${this.globalSum}`;
         } else if (this.globalSum > 0) {
             // If it is greater than 0, this signifies that the black pieces player has an advantage.
-            advantageStatus = 'Black';
+            advantageStatus = `Black | ${this.globalSum}`;
         } else if (this.globalSum < 0) {
             // If it is less than 0, this signifies that the white pieces player has an advantage.
-            advantageStatus = 'White';
+            advantageStatus = `White | ${this.globalSum}`;
         }
 
         // Displays the advantage status in the appropriate display.

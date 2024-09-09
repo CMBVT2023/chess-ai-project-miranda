@@ -88,7 +88,7 @@ const whitePieceSquareTables = {
 }
 
 // For both objects, 'k_e' is associated with the king piece near the end of the game since the positioning values will change, and adding a second property for 'k_e' for piece weights removes
-// the need for passing to different keys near the end of the game, 'k_e' to position values and 'k' to piece weights, in this way 'k_e' can be used for both.
+// the need for passing two different keys near the end of the game, 'k_e' to position values and 'k' to piece weights, in this way 'k_e' can be used for both.
 
 
 // Reverses the position values of the board for the black pieces.
@@ -117,11 +117,34 @@ let selfPositioning = {
     'b' : blackPiecePositioning
 }
 
-export function evaluateBoard(move, prevSum, color) {
+export function evaluateBoard(move, chessGame, prevSum, color) {
     // // The to and from takes in the value of the current piece's position, rather than deal with letters for the column, like 'a' for column, it instead converts 
     // // the letters to their associated number using the charCodeAt() method to make it easier to work with.
     // // // Note that in this case, the x and y origin is the top left.
 
+    // Checks if the move will result in a checkmate,
+    if (chessGame.isCheckmate()) {
+            // If so, then it checks the color that made the move.
+        if (move.color == color) {
+            // if it is the mainPlayer, return the highest value possible to signify that this is the most ideal move and the biggest advantage for the main player.
+            return 10 ** 10;
+        } else {
+            // Else, return the lowest value possible to signify that the move is the most ideal move for the opponent and a big disadvantage for the main player.
+            return -(10 ** 10);
+        }
+    }
+
+    
+    // The project that I based this on has a check to see if the game,
+    // isDraw()  || chessGame.isThreefoldRepetition() || chessGame.isStalemate()
+    // But chessGame.isDraw() already checks for the next two so they are redundant calls. 1504
+    
+    // Checks if the move will result in a draw.
+    if (chessGame.isDraw()) {
+        // if so, it returns 0 to signify that the move is neutral as it is not an advantage for the mainPlayer
+        // or the opponent.
+        return 0;
+    }
 
     // First element in the array represents where the piece was moved from and 8 is subtracted from it, the length of the board
     // // Example moving from square two will result in 6.
@@ -134,6 +157,18 @@ export function evaluateBoard(move, prevSum, color) {
     // Similar to above, this is taking in the move as a string and converting it to a numerical representation of the row number and
     // column to show where the piece is positioned on the board.
     let moveTo = [8 - parseInt(move.to[1]), move.to.charCodeAt(0) - 'a'.charCodeAt(0)];
+    
+    // Checks if the game currently has a potential check.
+    if(chessGame.inCheck()) {
+        // If so, check if its the main player who made the move. 
+        if(move.color == color) {
+            // If so, add to the score since it is an advantage for the player.
+            prevSum += 50
+        } else {
+            // If not, subtract from the sum since it is a disadvantage for the player.
+            prevSum -= 50;
+        }
+    }
     
     // Alters the regular 'k' string to the 'k_e' string before evaluating any position values,
     // // This is necessary nearing the end game since the value positions for hte king will need to change.

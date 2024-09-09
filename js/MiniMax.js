@@ -17,12 +17,12 @@ export function movesMade() {
 // Initializes a function that sorts all possible moves based on their evaluation score.
 // // Parameters are an array of possibleMoves, the currentScore of the board, the color of the current player, and a boolean that signifies if the current player is the main player,
 // // true signifies that it is the main player.
-function calculateScores(moves, prevScore, color, isMainPlayer) {
+function calculateScores(moves, chessGame, prevScore, color, isMainPlayer) {
     // Iterates through the passed in moves array 
     for (const move of moves) {
         // Appends a new score property to the current move with the value obtained by calling the evaluateBoard function and passing in the appropriate arguments.
         // The first is the current move, the next is the current board score, and the last is the color of the current player.
-        move.score = evaluateBoard(move, prevScore, color);
+        move.score = evaluateBoard(move, chessGame, prevScore, color);
     }
     
     
@@ -56,7 +56,7 @@ function calculateScores(moves, prevScore, color, isMainPlayer) {
 export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, sum, color, alphaVal, betaVal) {
     // Generates the list of currently possible moves and passed the array and other arguments to the calculateScore function.
     // // The first argument passed is the moves array, then the sum of the current board, the color of the current player, and finally, a boolean to signify if the current player is the main player.
-    let movesList = calculateScores(currentGame.simpleMoves(), sum, color, isMainPlayer);
+    let movesList = calculateScores(currentGame.simpleMoves(), currentGame, sum, color, isMainPlayer);
 
     // Checks if the maximum node depth is reached or if no other moves are possible,
     if (currentNodeDepth == 0 || movesList.length == 0) {
@@ -84,7 +84,7 @@ export function miniMaxCalculation(currentNodeDepth, isMainPlayer, currentGame, 
         let tempMove = currentGame.move(currentMove);
 
         // Initializes a temporary variable to store the evaluation score of the temporary move.
-        let tempSum = evaluateBoard(tempMove, sum, color);
+        let tempSum = evaluateBoard(tempMove, currentGame, sum, color);
 
         // Recursively calls the miniMaxCalculation function again to retrieve the best possible score from all of the child node/moves from the current move,
         // the returned value is either the minimum if the move is for the opponent or the maximum score if the move is for the main player.

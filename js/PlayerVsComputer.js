@@ -72,7 +72,7 @@ export class playerVsComputer extends ChessGame {
         // Checks if the possible moves array contains any elements.
         if (possibleMoves.length == 0) {
             // If no elements are present, list the current game status then return to stop the game.
-            this.currentGameStatus();
+            this.updateGameStatus();
             return;
         };
 
@@ -108,7 +108,6 @@ export class playerVsComputer extends ChessGame {
             // Calls the method to update the globalSum variable based on the new move.
             this.updateGlobalSum(move);
 
-
             // Calls the updateGameStatus method and checks if the returned boolean is true.
             if (this.updateGameStatus()) {
                 // If so, return to end the game.
@@ -117,7 +116,8 @@ export class playerVsComputer extends ChessGame {
                 // If not, call the method to trigger the computer player's move.
                 setTimeout(this.npcMove.bind(this), this.playSpeed);
             }
-        } catch {
+        } catch (error) {
+            // console.error(error)
             // if not, 'snapback' is returned to move the piece back to its previous position before being grabbed.
             return 'snapback';
         }
@@ -152,12 +152,15 @@ export class playerVsComputer extends ChessGame {
         // Checks if the possible moves array contains any elements.
         if (possibleMoves.length == 0) {
             // If no elements are present, list the current game status then return to stop the game.
-            this.currentGameStatus();
+            this.updateGameStatus();
             return;
         };
 
         let randomIndex = Math.floor(Math.random() * possibleMoves.length);
         let nextMove = possibleMoves[randomIndex];
+
+        // Recalculated the globalSum by calling the updateGlobalSum method and passing in the move that will be made.
+        this.updateGlobalSum(nextMove);
         
         this.currentGame.move(nextMove);
         this.currentBoard.position(this.currentGame.fen());
@@ -178,14 +181,14 @@ export class playerVsComputer extends ChessGame {
         // Checks if the possible moves array contains any elements.
         if (possibleMoves.length == 0) {
             // If no elements are present, list the current game status then return to stop the game.
-            this.currentGameStatus();
+            this.updateGameStatus();
             return;
         };
 
         // Initializes two variables,
         // one is to store a temporary number,
         // and the second is to store the bestMove once all moves are evaluated.
-        let tempScore;
+        let currentScore;
         let bestMove;
 
         // Initializes a variable to store the starting time of when all moves are being evaluation.
@@ -195,26 +198,26 @@ export class playerVsComputer extends ChessGame {
         for (const move of possibleMoves) {
             // Initializes a variable that store the value returned from the evaluateBoard function call.
             // This score is calculated based on the move being evaluated, the current global sum value, and the third is the constant 'b', to have the evaluation be based on the blacks perspective.
-            let currentScore = evaluateBoard(move, this.globalSum, 'b');
+            let tempScore = evaluateBoard(move, this.currentGame, this.globalSum, 'b');
 
             // Checks if the calculated score is higher then the tempScore or the bestMove variable is undefined.
             // // The second check is to ensure that at least one move is selected.
-            if (currentScore > tempScore || bestMove == undefined) {
+            if (tempScore > currentScore || bestMove == undefined) {
                 // Sets the tempScore to the currentScore to keep track of the highest score possible out of all moves.
-                tempScore = currentScore;
+                currentScore = tempScore;
 
                 // Saves the current move as the bestMove possible.
                 bestMove = move;
             }
         }
-
+        
         // Calls the method to update the amount of time it took for the computer player to calculate the best move and the amount of moves it checked.
         // // The amount of time is calculated based on the current time subtracted from the time the evaluation began.
         this.updateNPCDisplayInfo(this.npcTime, this.npcMoves, Date.now() - startTime, possibleMoves.length)
         
-        // Recalculated the globalSum by calling the evaluateBoard method and passing in the move that will be made, the current globalSum, and the constant 'b', to have the evaluation be based on the blacks perspective.
-        this.globalSum = evaluateBoard(bestMove, this.globalSum, 'b');
-
+        // Recalculated the globalSum by calling the updateGlobalSum method and passing in the move that will be made.
+        this.updateGlobalSum(bestMove);
+        
         // Performs the best calculated move.
         this.currentGame.move(bestMove);
 
@@ -236,7 +239,7 @@ export class playerVsComputer extends ChessGame {
         // Checks if the possible moves array contains any elements.
         if (possibleMoves.length == 0) {
             // If no elements are present, list the current game status then return to stop the game.
-            this.currentGameStatus();
+            this.updateGameStatus();
             return;
         };
 
@@ -254,7 +257,7 @@ export class playerVsComputer extends ChessGame {
         // // the fourth is the color of the current player's turn, since this function will only be called during black's turn the string 'b' is used,
         // // the last two are the alpha and beta values of the branches that will be used to determine if a branch can be cut or no longer searched on the tree,
         // // and to start these values are set to their highest possible values with alpha being the largest negative number and beta being the largest positive number possible.
-        let [bestMove, nestedValue] = miniMaxCalculation(3, true, this.currentGame, this.globalSum, 'b', Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
+        let bestMove = miniMaxCalculation(3, true, this.currentGame, this.globalSum, 'b', Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY)[0];
 
         // Calls the method to update the amount of time it took for the computer player to calculate the best move and the amount of moves it checked.
         // // The amount of time is calculated based on the current time subtracted from the time the evaluation began.

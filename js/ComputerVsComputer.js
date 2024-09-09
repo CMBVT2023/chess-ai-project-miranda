@@ -89,7 +89,7 @@ export class computerVsComputer extends ChessGame {
         // Checks if the possible moves array contains any elements.
         if (possibleMoves.length == 0) {
             // If no elements are present, list the current game status then return to stop the game.
-            this.currentGameStatus();
+            this.updateGameStatus();
             return;
         };
         let randomIndex = Math.floor(Math.random() * possibleMoves.length);
@@ -97,6 +97,9 @@ export class computerVsComputer extends ChessGame {
         
         this.currentGame.move(nextMove);
         this.currentBoard.position(this.currentGame.fen())
+
+        // Calls the method to update the currentGlobalSum once the randomized move is made on the board.
+        this.updateGlobalSum(nextMove);
 
         // Calls the updateGameStatus method and checks if the returned boolean is true.
         if (this.updateGameStatus()) {
@@ -127,42 +130,48 @@ export class computerVsComputer extends ChessGame {
             // Checks if the possible moves array contains any elements.
             if (possibleMoves.length == 0) {
                 // If no elements are present, list the current game status then return to stop the game.
-                this.currentGameStatus();
+                this.updateGameStatus();
                 return;
             };
 
             // Initializes two variables, one to store the bestMove once all moves are evaluated
-            // and the second store the starting time of when all moves are being evaluation.
+            // the second to store the currentBestScore of the moves list,
+            // and the third to store the starting time of when all moves are being evaluation.
             let bestMove;
+            let currentBestScore;
             let startTime = Date.now()
 
             // Checks the color of the current player's turn.
             if (this.currentGame.turn() == 'w') {
+                // If it is the white opponent's turn,
+
                 // Iterates through all possible moves
                 for (const move of possibleMoves) {
                     // Store the score calculated from the evaluateBoard function, and if it is white's turn, the negative value of the globalSum is use since the globalSum is based on black's 
                     // positioning of the board.
-                    let tempScore = evaluateBoard(move, -this.globalSum, this.currentGame.turn());
-                    // Checks if the tempScore is better than the negative value of the globalSum, white's value of the board,
+                    let tempScore = evaluateBoard(move, this.currentGame, -(this.globalSum), this.currentGame.turn());
+                    // Checks if the tempScore is better than the currentBestScore, white's value of the board,
                     // or if bestMove is currently undefined, this way at least one move is set as best move.
-                    if (tempScore > -this.globalSum || bestMove == undefined) {
+                    if (tempScore > currentBestScore || bestMove == undefined) {
                         // Updates the globalSum to reflect blacks positioning of the board by using the negative value of the board evaluation.
-                        this.globalSum = -tempScore;
+                        currentBestScore = tempScore;
 
                         // Saves the current move as the bestMove possible.
                         bestMove = move;
                     }
                 }
             } else {
+                // If it is the black opponent's turn,
+
                 for (const move of possibleMoves) {
-                    // Store the score calculated from the evaluateBoard function, and if it is black's turn, the positive value of the globalSum is use since the globalSum is based on black's 
+                    // Store the score calculated from the evaluateBoard function, and if it is black's turn, the positive value of the globalSum is used since the globalSum is based on black's 
                     // positioning of the board.
-                    let tempScore = evaluateBoard(move, this.globalSum, this.currentGame.turn());
+                    let tempScore = evaluateBoard(move, this.currentGame, this.globalSum, this.currentGame.turn());
                     // Checks if the tempScore is better than the value of the globalSum,
                     // or if bestMove is currently undefined, this way at least one move is set as best move.
-                    if (tempScore > this.globalSum || bestMove == undefined) {
-                        // Updates the globalSum to reflect the new highest score found.
-                        this.globalSum = tempScore;
+                    if (tempScore > currentBestScore || bestMove == undefined) {
+                        // Updates the currentBestScore to reflect the new highest score found.
+                        currentBestScore = tempScore;
 
                         // Saves the current move as the bestMove possible.
                         bestMove = move;
@@ -186,6 +195,9 @@ export class computerVsComputer extends ChessGame {
 
             // Updates the chessboard to the current position of all pieces by obtaining the fen string from the chess game using the .fen() method on the currentGame.
             this.currentBoard.position(this.currentGame.fen())
+
+            // Calls the method to update the currentGlobalSum once the bestMove is made on the board.
+            this.updateGlobalSum(bestMove);
 
             // Calls the updateGameStatus method and checks if the returned boolean is true.
             if (this.updateGameStatus()) {
@@ -218,15 +230,13 @@ export class computerVsComputer extends ChessGame {
             // Checks if the possible moves array contains any elements.
             if (possibleMoves.length == 0) {
                 // If no elements are present, list the current game status then return to stop the game.
-                this.currentGameStatus();
+                this.updateGameStatus();
                 return;
             };
     
-            // Initializes three variables, 
-            // one to store the number value returned from the recursive call
-            // the second to store the bestMove found by the recursive function,
-            // and the third to store the starting time of when the minimax function is called.
-            let tempValue;
+            // Initializes two variables, 
+            // One to store the bestMove found by the recursive function,
+            // and the second to store the starting time of when the minimax function is called.
             let bestMove;
             let startTime = Date.now()
 
@@ -238,11 +248,11 @@ export class computerVsComputer extends ChessGame {
             if (this.currentGame.turn() == 'w') {
                 // If it is the white players turn, the white player uses the false boolean and the negative value of the global sum since black is the main player and the global sum is based
                 // on black's orientation or positioning of the board
-                [bestMove, tempValue] = miniMaxCalculation(3, false, this.currentGame, -this.globalSum, this.currentGame.turn(), Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
+                bestMove = miniMaxCalculation(3, false, this.currentGame, -(this.globalSum), this.currentGame.turn(), Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY)[0];
             } else {
                 // If it is the black players turn, the black player uses the true boolean and the positive value of the global sum since black is the main player and the global sum is based
                 // on black's orientation or positioning of the board.
-                [bestMove, tempValue] = miniMaxCalculation(3, true, this.currentGame, this.globalSum, this.currentGame.turn(), Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY);
+                bestMove = miniMaxCalculation(3, true, this.currentGame, this.globalSum, this.currentGame.turn(), Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY)[0];
             }
 
             // Checks the color of the current player's turn
